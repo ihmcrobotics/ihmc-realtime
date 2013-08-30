@@ -4,7 +4,7 @@ public class RealtimeNative
 {
    static
    {
-      System.loadLibrary("realtimeNative");
+      System.loadLibrary("RealtimeNative");
       mlockall();
       registerVM();
    }

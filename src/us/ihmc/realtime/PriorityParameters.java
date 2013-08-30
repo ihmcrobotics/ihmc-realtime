@@ -1,5 +1,6 @@
 package us.ihmc.realtime;
 
+
 public class PriorityParameters
 {
    private static int maximumPriority = RealtimeNative.getMaximumPriorityNative();

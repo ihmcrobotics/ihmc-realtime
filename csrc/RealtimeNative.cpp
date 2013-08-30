@@ -3,11 +3,12 @@
 #include <sys/mman.h>
 #include <iostream>
 #include <pthread.h>
+#include <sys/capability.h>
 
 #include "RealtimeNative.h"
 #include "Utils.hpp"
 
-const inline int SCHED_POLICY = SCHED_FIFO;
+const int SCHED_POLICY = SCHED_RR;
 
 #define NSEC_PER_SEC 1000000000
 
@@ -37,7 +38,7 @@ void* run(void* threadPtr)
 	{
 		// Cannot throw a runtime exception because we don't have an env
 		std::cerr << "Cannot load env" << std::endl;
-		return -1;
+		return (void*)-1;
 	}
 
 	if(thread->periodic && thread->setTriggerToClock)
@@ -46,8 +47,13 @@ void* run(void* threadPtr)
 		thread->setTriggerToClock = false;
 	}
 
+	env->CallVoidMethod(thread->javaThread, thread->methodID);
 
-	return 0;
+	env->DeleteGlobalRef(thread->javaThread);
+	delete thread;
+
+	releaseEnv(globalVirtualMachine);
+	return (void*)0;
 }
 
 
@@ -56,8 +62,21 @@ void* run(void* threadPtr)
  */
 JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_mlockall(JNIEnv* env, jclass klass)
 {
-	JNIassert(env, false);
-	JNIassert(env, mlockall(MCL_CURRENT|MCL_FUTURE) == 0);
+	struct __user_cap_header_struct cap_header_data;
+	cap_header_data.pid = getpid();
+	cap_header_data.version = _LINUX_CAPABILITY_VERSION;
+
+	struct __user_cap_data_struct cap_data;
+	capget(&cap_header_data, &cap_data);
+	if((cap_data.effective & CAP_IPC_LOCK) != CAP_IPC_LOCK)
+	{
+//		throwRuntimeException(env, "Cannot lock memory, expect page faults. Run as root");
+		std::cerr << "Cannot lock memory, expect page faults. Run as root" << std::endl;
+	}
+	else
+	{
+		JNIassert(env, mlockall(MCL_CURRENT|MCL_FUTURE) == 0);
+	}
 }
 
 /**
@@ -92,7 +111,7 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_createThread(JNIEnv
 	// Create thread object
 	Thread* thread = new Thread();
 	thread->priority = priority;
-	thread->period = periodic;
+	thread->periodic = periodic;
 	if(periodic)
 	{
 		if(startOnClock)
@@ -103,6 +122,10 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_createThread(JNIEnv
 
 			// Normalize nextTrigger
 			tsnorm(&thread->nextTrigger);
+		}
+		else
+		{
+			thread->setTriggerToClock = true;
 		}
 
 		thread->period.tv_sec = periodSeconds;
@@ -122,7 +145,7 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_createThread(JNIEnv
 
 	JNIassert(env, thread->methodID != NULL);
 
-	return (long long)&thread;
+	return (long long)thread;
 }
 
 /**
@@ -140,12 +163,12 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_startThread(JNIEnv* 
 	param.__sched_priority = thread->priority;
 
 	JNIassert(env, pthread_attr_init(&attr) == 0);
-	JNIassert(env, pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED));
+	JNIassert(env, pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED) == 0);
 	JNIassert(env, pthread_attr_setschedpolicy(&attr, SCHED_POLICY) == 0);
 	JNIassert(env, pthread_attr_setschedparam(&attr, &param) == 0);
 
-
 	int err = pthread_create(&thread->thread, &attr, run, thread);
+
 
 	pthread_attr_destroy(&attr);
 
@@ -161,7 +184,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JN
 		jlong threadPtr)
 {
 	Thread* thread = (Thread*) threadPtr;
-	if(!thread->period)
+	if(!thread->periodic)
 	{
 		throwRuntimeException(env, "Thread is not periodic");
 	}

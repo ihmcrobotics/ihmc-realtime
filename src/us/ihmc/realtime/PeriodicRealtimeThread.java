@@ -12,11 +12,14 @@ public class PeriodicRealtimeThread extends RealtimeThread
    @Override
    public final void run()
    {
-      super.waitForNextPeriod();
-      
-      if(runnable != null)
+      while(true)
       {
-         runnable.run();
+         super.waitForNextPeriod();
+         
+         if(runnable != null)
+         {
+            runnable.run();
+         }
       }
    }
 

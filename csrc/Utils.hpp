@@ -3,8 +3,15 @@
 #include <iostream>
 #include <pthread.h>
 #include <sys/types.h>
+#include <string>
+#include <sstream>
+#include <cerrno>
+#include <cstring>
 
-const inline int NSEC_PER_SEC = 1000000000;
+#include <unistd.h>
+#include <sys/syscall.h>
+
+const int NSEC_PER_SEC = 1000000000;
 
 
 /**
@@ -16,10 +23,11 @@ const inline int NSEC_PER_SEC = 1000000000;
 #define JNIassert(env, cond) \
 	do { \
 		if(!(cond)) { \
-			throwRuntimeException((env), __FILE__, __PRETTY_FUNCTION__, __LINE__); \
+			throwRuntimeException((env), __FILE__, __PRETTY_FUNCTION__, __LINE__, errno); \
 		} \
 	} while(0)
 
+inline void throwRuntimeException(JNIEnv* env, std::string file, std::string function, int line, int err);
 
 /**
  * Attach the current thread to the VM if necessary and return the Java environment
@@ -30,18 +38,16 @@ inline JNIEnv* getEnv(JavaVM* vm)
 {
 	// Get the java environment
 	JNIEnv* env;
-	int getEnvStat = vm->GetEnv((void **) &env,
-			JNI_VERSION_1_6);
+	int getEnvStat = vm->GetEnv((void **) &env, JNI_VERSION_1_6);
 	if (getEnvStat == JNI_EDETACHED)
 	{
 
 		struct sched_param priority;
 		int policy;
-		pthread_t thread = pthread_self();
 
 		JNIassert(env, pthread_getschedparam(pthread_self(), &policy, &priority) == 0);
 
-		std::cout << "Attaching native thread " << thread << " with priority " << priority << " to JVM" << std::endl;
+		std::cout << "Attaching native thread " << ((long int)syscall(SYS_gettid)) << " with priority " << priority.__sched_priority << " to JVM" << std::endl;
 		if (vm->AttachCurrentThread((void **) &env, NULL)
 				!= 0)
 		{
@@ -61,6 +67,11 @@ inline JNIEnv* getEnv(JavaVM* vm)
 	}
 
 	return env;
+}
+
+inline void releaseEnv(JavaVM* vm)
+{
+	vm->DetachCurrentThread();
 }
 
 /**
@@ -83,9 +94,14 @@ inline void throwRuntimeException(JNIEnv* env, std::string msg)
  * @param function Caller function name
  * @param line Caller line #
  */
-inline void throwRuntimeException(JNIEnv* env, std::string file, std::string function, int line)
+inline void throwRuntimeException(JNIEnv* env, std::string file, std::string function, int line, int err)
 {
-	throwRuntimeException(env, std::string("Exception in ") + file + std::string(", ") + function + std::string(" at line ") + line);
+	std::stringstream s;
+	s << "Exception in " << file << ", " << function << " at line " << line << ": " << strerror(err) << " ";
+	throwRuntimeException(env, s.str());
+	JavaVM* vm;
+	env->GetJavaVM(&vm);
+	vm->DetachCurrentThread();
 }
 
 

@@ -1,6 +1,7 @@
 package us.ihmc.realtime;
 
 
+
 public class PeriodicParameters
 {
    private final MonotonicTime startTime;
