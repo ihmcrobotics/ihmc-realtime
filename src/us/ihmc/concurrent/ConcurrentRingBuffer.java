@@ -16,7 +16,7 @@ import us.ihmc.util.RealtimeTools;
  *
  * @param <T> Class in buffer
  */
-public class ConcurrentCyclicBuffer<T>
+public class ConcurrentRingBuffer<T>
 {
 
    /*
@@ -48,7 +48,7 @@ public class ConcurrentCyclicBuffer<T>
 
    private final int capacity;
    private final int capacityMask;
-   private T[] objects;
+   private T[] buffer;
 
    /**
     * 
@@ -56,7 +56,7 @@ public class ConcurrentCyclicBuffer<T>
     * @param capacity Capacity of the ring buffer, automatically rounded up to the next power of two
     */
    @SuppressWarnings("unchecked")
-   public ConcurrentCyclicBuffer(Builder<? extends T> classBuilder, int capacity)
+   public ConcurrentRingBuffer(Builder<? extends T> classBuilder, int capacity)
    {
       if (capacity < 0)
       {
@@ -66,17 +66,17 @@ public class ConcurrentCyclicBuffer<T>
       this.capacity = RealtimeTools.nextPowerOfTwo(capacity);
       this.capacityMask = this.capacity - 1;
 
-      objects = (T[]) new Object[this.capacity];
+      buffer = (T[]) new Object[this.capacity];
 
       for (int i = 0; i < this.capacity; i++)
       {
-         objects[i] = classBuilder.newInstance();
+         buffer[i] = classBuilder.newInstance();
       }
    }
 
    private T getObject(long position)
    {
-      return objects[(int) (position & capacityMask)];
+      return buffer[(int) (position & capacityMask)];
    }
 
    /**

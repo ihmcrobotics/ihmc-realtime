@@ -6,16 +6,16 @@ import java.util.Random;
 
 import org.junit.Test;
 
-public class ConcurrentCyclicBufferTest
+public class ConcurrentRingBufferTest
 {
    @Test
    public void test()
    {
-      final long iterations = 1000000L;
-      final long writesPerIteration = 100L;
+      final long iterations = 100000000L;
+      final long writesPerIteration = 1L;
       final long seed = 89126450L;
       
-      final ConcurrentCyclicBuffer<MutableLong> concurrentCyclicBuffer = new ConcurrentCyclicBuffer<>(new MutableLongBuilder(), 1024);
+      final ConcurrentRingBuffer<MutableLong> concurrentRingBuffer = new ConcurrentRingBuffer<>(new MutableLongBuilder(), 1024);
             
       // Producer
       new Thread(new Runnable()
@@ -29,10 +29,10 @@ public class ConcurrentCyclicBufferTest
                for(int y = 0; y < writesPerIteration; y++)
                {
                   MutableLong nextValue;
-                  while((nextValue = concurrentCyclicBuffer.next()) == null);  // Spinlock
+                  while((nextValue = concurrentRingBuffer.next()) == null);  // Spinlock
                   nextValue.value = random.nextLong();
                }
-               concurrentCyclicBuffer.commit();
+               concurrentRingBuffer.commit();
             }
             
          }
@@ -45,10 +45,10 @@ public class ConcurrentCyclicBufferTest
       Random random = new Random(seed);
       while(running)
       {
-         if(concurrentCyclicBuffer.poll())
+         if(concurrentRingBuffer.poll())
          {
             MutableLong value;
-            while((value = concurrentCyclicBuffer.read()) != null)
+            while((value = concurrentRingBuffer.read()) != null)
             {
                assertTrue(random.nextLong() == value.value);
                
@@ -59,7 +59,7 @@ public class ConcurrentCyclicBufferTest
                   break;
                }
             }
-            concurrentCyclicBuffer.flush();
+            concurrentRingBuffer.flush();
          }
       }
    }
@@ -77,6 +77,5 @@ public class ConcurrentCyclicBufferTest
       {
          return new MutableLong();
       }
-
    }
 }
