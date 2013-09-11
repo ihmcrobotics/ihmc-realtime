@@ -15,7 +15,7 @@ public class ConcurrentRingBufferTest
       final long writesPerIteration = 1L;
       final long seed = 89126450L;
       
-      final ConcurrentRingBuffer<MutableLong> concurrentRingBuffer = new ConcurrentRingBuffer<>(new MutableLongBuilder(), 1024);
+      final ConcurrentRingBuffer<MutableLong> concurrentRingBuffer = new ConcurrentRingBuffer<MutableLong>(new MutableLongBuilder(), 1024);
             
       // Producer
       new Thread(new Runnable()
