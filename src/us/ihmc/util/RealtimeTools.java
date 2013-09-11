@@ -41,6 +41,11 @@ public class RealtimeTools
    {
       return (v/8 + 1) * 8;
    }
+   
+   public static final int nextDivisibleBySixteen(int v)
+   {
+      return (v/16 + 1) * 16;
+   }
 
    
 }
