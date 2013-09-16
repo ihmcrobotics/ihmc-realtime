@@ -15,6 +15,7 @@ public class RealtimeNative
    static native long createThread(Runnable target, int priority, boolean periodic, boolean startOnClock, long startSeconds, long startNanos, long periodSeconds, long periodNanos);
    static native int startThread(long threadID);
    static native int waitForNextPeriod(long threadID);
+   static native int setNextPeriodToClock(long threadID); 
 
    static native int getMaximumPriorityNative();
    static native int getMinimumPriorityNative();

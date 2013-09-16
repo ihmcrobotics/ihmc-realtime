@@ -91,6 +91,11 @@ public class RealtimeThread implements Runnable
       RealtimeNative.waitForNextPeriod(threadID);
    }
    
+   public void setNextPeriodToClock()
+   {
+      RealtimeNative.setNextPeriodToClock(threadID);
+   }
+   
    public static SchedulerAlgorithm getCurrentThreadScheduler()
    {
       int sched = RealtimeNative.getCurrentThreadScheduler();
