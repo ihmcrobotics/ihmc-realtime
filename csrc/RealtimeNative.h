@@ -42,9 +42,17 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_startThread
 /*
  * Class:     us_ihmc_realtime_RealtimeNative
  * Method:    waitForNextPeriod
- * Signature: (J)I
+ * Signature: (J)V
  */
-JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod
+JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     us_ihmc_realtime_RealtimeNative
+ * Method:    setNextPeriodToClock
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriodToClock
   (JNIEnv *, jclass, jlong);
 
 /*

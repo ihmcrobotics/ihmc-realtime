@@ -180,7 +180,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_startThread(JNIEnv* 
  *
  * @param threadPtr 64bit pointer to Thread
  */
-JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JNIEnv* env, jclass klass,
+JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JNIEnv* env, jclass klass,
 		jlong threadPtr)
 {
 	Thread* thread = (Thread*) threadPtr;
@@ -192,6 +192,24 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JN
 	tsadd(&thread->nextTrigger, &thread->period);
 
 	clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &thread->nextTrigger, NULL);
+}
+
+/**
+ * Set the next period to the current clock time
+ *
+ * @param threadPtr 64bit pointer to Thread
+ */
+JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriodToClock
+  (JNIEnv* env, jclass klass, jlong threadPtr)
+{
+	Thread* thread = (Thread*) threadPtr;
+	if(!thread->periodic)
+	{
+		throwRuntimeException(env, "Thread is not periodic");
+	}
+
+	JNIassert(env, clock_gettime(CLOCK_MONOTONIC, &thread->nextTrigger) == 0);
+	thread->setTriggerToClock = false;
 }
 
 /**
