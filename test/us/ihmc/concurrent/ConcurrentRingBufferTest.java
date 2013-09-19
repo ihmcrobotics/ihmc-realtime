@@ -20,7 +20,6 @@ public class ConcurrentRingBufferTest
       // Producer
       new Thread(new Runnable()
       {
-         @Override
          public void run()
          {
             Random random = new Random(seed);
@@ -72,7 +71,7 @@ public class ConcurrentRingBufferTest
 
    public class MutableLongBuilder implements Builder<MutableLong>
    {
-      @Override
+      
       public MutableLong newInstance()
       {
          return new MutableLong();

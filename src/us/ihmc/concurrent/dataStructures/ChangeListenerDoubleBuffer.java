@@ -54,7 +54,7 @@ public class ChangeListenerDoubleBuffer
          this.capacity = capacity;
       }
 
-      @Override
+    
       public ChangeListenerDoubleBuffer newInstance()
       {
          return new ChangeListenerDoubleBuffer(capacity);

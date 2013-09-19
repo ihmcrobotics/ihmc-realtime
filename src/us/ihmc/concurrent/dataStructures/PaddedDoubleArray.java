@@ -73,7 +73,6 @@ public class PaddedDoubleArray
          this.initialValue = initialValue;
       }
 
-      @Override
       public PaddedDoubleArray newInstance()
       {
          PaddedDoubleArray paddedDoubleArray = new PaddedDoubleArray(initialValue.length);

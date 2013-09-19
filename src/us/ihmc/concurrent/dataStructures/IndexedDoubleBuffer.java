@@ -62,7 +62,7 @@ public class IndexedDoubleBuffer
          this.capacity = capacity;
       }
 
-      @Override
+      
       public IndexedDoubleBuffer newInstance()
       {
          return new IndexedDoubleBuffer(capacity);
