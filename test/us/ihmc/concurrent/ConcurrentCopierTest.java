@@ -15,7 +15,7 @@ public class ConcurrentCopierTest
       final long seed = 890327L;
       
       Random random = new Random(seed);
-      final ConcurrentCopier<MutableTestObject> copier = new ConcurrentCopier<>(new MutableTestObjectBuilder());
+      final ConcurrentCopier<MutableTestObject> copier = new ConcurrentCopier<MutableTestObject>(new MutableTestObjectBuilder());
       
       for(long i = 0; i < iterations; i++)
       {
@@ -40,7 +40,7 @@ public class ConcurrentCopierTest
       final long iterations = 1000000L;
       final long seed = 89126450L;
       
-      final ConcurrentCopier<MutableTestObject> copier = new ConcurrentCopier<>(new MutableTestObjectBuilder());
+      final ConcurrentCopier<MutableTestObject> copier = new ConcurrentCopier<MutableTestObject>(new MutableTestObjectBuilder());
             
       // Producer
       new Thread(new Runnable()

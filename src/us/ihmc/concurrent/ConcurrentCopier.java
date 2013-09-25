@@ -16,9 +16,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ConcurrentCopier<T>
 {
-   private static final int NEXT_OBJECT_TO_READ_MASK = 0b1100;
-   private static final int CURRENTLY_BEING_READ_MASK = 0b0011;
-   private static final int INITIAL_STATE = 0b1100;
+   private static final int NEXT_OBJECT_TO_READ_MASK = 0xC;
+   private static final int CURRENTLY_BEING_READ_MASK = 0x3;
+   private static final int INITIAL_STATE = 0xC;
    
    
    public final T[] buffer;
@@ -70,26 +70,26 @@ public class ConcurrentCopier<T>
    {
       switch(currentState)
       {
-      case 0b0000:
-         return 0b01;
-      case 0b0001:
-         return 0b10;
-      case 0b0010:
-         return 0b01;
-      case 0b0100:
-         return 0b10;
-      case 0b0101:
-         return 0b00;
-      case 0b0110:
-         return 0b00;
-      case 0b1000:
-         return 0b01;
-      case 0b1001:
-         return 0b00;
-      case 0b1010:
-         return 0b00;
+      case 0x0:
+         return 0x1;
+      case 0x1:
+         return 0x2;
+      case 0x2:
+         return 0x1;
+      case 0x4:
+         return 0x2;
+      case 0x5:
+         return 0x0;
+      case 0x6:
+         return 0x0;
+      case 0x8:
+         return 0x1;
+      case 0x9:
+         return 0x0;
+      case 0xA:
+         return 0x0;
       case INITIAL_STATE:
-         return 0b01;
+         return 0x1;
       default:
          throw new RuntimeException("Invalid Copier State: " + currentState);
       }
