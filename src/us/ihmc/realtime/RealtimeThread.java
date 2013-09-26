@@ -1,7 +1,9 @@
 package us.ihmc.realtime;
 
+import us.ihmc.util.ThreadInterface;
 
-public class RealtimeThread implements Runnable
+
+public class RealtimeThread implements Runnable, ThreadInterface
 {
    enum SchedulerAlgorithm
    {
