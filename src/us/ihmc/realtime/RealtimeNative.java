@@ -18,7 +18,7 @@ public class RealtimeNative
    static native void waitForNextPeriod(long threadID);
 
    static native void setNextPeriodToClock(long threadID); 
-   static native void setNextPeriod(long seconds, long nanoseconds);
+   static native void setNextPeriod(long threadID, long seconds, long nanoseconds);
    
    /**
     * Only valid when time < 292 years

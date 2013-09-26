@@ -63,7 +63,6 @@ public class RealtimeThread implements Runnable, ThreadInterface
       threadID = RealtimeNative.createThread(this, priorityParameters.getPriority(), periodic, startOnClock, startSeconds, startNanos, periodSeconds, periodNanos);
       this.runnable = runnable;
       
-      realtimeThreads.set(this);
    }
 
    public final synchronized void start()
@@ -76,6 +75,12 @@ public class RealtimeThread implements Runnable, ThreadInterface
       RealtimeNative.startThread(threadID);
       
       threadStatus = ThreadStatus.STARTED;
+   }
+   
+   void runThread()
+   {
+      realtimeThreads.set(this);
+      run();
    }
 
    public void run()
@@ -146,6 +151,6 @@ public class RealtimeThread implements Runnable, ThreadInterface
 
    public void setNextPeriod(MonotonicTime nextControllerTrigger)
    {
-      RealtimeNative.setNextPeriod(nextControllerTrigger.seconds(), nextControllerTrigger.nanoseconds());
+      RealtimeNative.setNextPeriod(threadID, nextControllerTrigger.seconds(), nextControllerTrigger.nanoseconds());
    }
 }

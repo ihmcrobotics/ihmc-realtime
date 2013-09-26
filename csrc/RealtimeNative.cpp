@@ -141,7 +141,7 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_createThread(JNIEnv
 	jclass targetClass = env->GetObjectClass(target);
 
 	JNIassert(env, targetClass != NULL);
-	thread->methodID = env->GetMethodID(targetClass, "run", "()V");
+	thread->methodID = env->GetMethodID(targetClass, "runThread", "()V");
 
 	JNIassert(env, thread->methodID != NULL);
 
@@ -213,7 +213,7 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriodToClock
 }
 
 JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriod
-  (JNIEnv* env, jclass klass, jlong threadPtr, jlong time)
+  (JNIEnv* env, jclass klass, jlong threadPtr, jlong seconds, jlong nanoseconds)
 {
 	Thread* thread = (Thread*) threadPtr;
 	if(!thread->periodic)
@@ -221,7 +221,8 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriod
 		throwRuntimeException(env, "Thread is not periodic");
 	}
 
-	thread->nextTrigger.tv_nsec = time;
+	thread->nextTrigger.tv_sec = seconds;
+	thread->nextTrigger.tv_nsec = nanoseconds;
 	tsnorm(&thread->nextTrigger);
 	thread->setTriggerToClock = false;
 }

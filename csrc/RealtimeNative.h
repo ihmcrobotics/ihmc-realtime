@@ -58,10 +58,10 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriodToClock
 /*
  * Class:     us_ihmc_realtime_RealtimeNative
  * Method:    setNextPeriod
- * Signature: (JJ)V
+ * Signature: (JJJ)V
  */
 JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriod
-  (JNIEnv *, jclass, jlong, jlong);
+  (JNIEnv *, jclass, jlong, jlong, jlong);
 
 /*
  * Class:     us_ihmc_realtime_RealtimeNative
