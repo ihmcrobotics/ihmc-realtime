@@ -77,8 +77,8 @@ public class MonotonicTime
    
    public void setToCurrentTime()
    {
-      this.seconds = RealtimeNative.getCurrentTimeNative();
-      this.nanoseconds = 0;
+      this.seconds = 0;
+      this.nanoseconds = RealtimeNative.getCurrentTimeNative();
       
       normalize();
    }
@@ -91,5 +91,11 @@ public class MonotonicTime
    long nanoseconds()
    {
       return nanoseconds;
+   }
+   
+   @Override
+   public String toString()
+   {
+      return seconds + "s " + nanoseconds + "ns";
    }
 }

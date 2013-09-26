@@ -212,6 +212,33 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriodToClock
 	thread->setTriggerToClock = false;
 }
 
+JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriod
+  (JNIEnv* env, jclass klass, jlong threadPtr, jlong time)
+{
+	Thread* thread = (Thread*) threadPtr;
+	if(!thread->periodic)
+	{
+		throwRuntimeException(env, "Thread is not periodic");
+	}
+
+	thread->nextTrigger.tv_nsec = time;
+	tsnorm(&thread->nextTrigger);
+	thread->setTriggerToClock = false;
+}
+
+JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getNextPeriod
+  (JNIEnv* env, jclass klass, jlong threadPtr)
+{
+	Thread* thread = (Thread*) threadPtr;
+	if(!thread->periodic)
+	{
+		throwRuntimeException(env, "Thread is not periodic");
+	}
+
+
+	return (((long long) thread->nextTrigger.tv_sec) * NSEC_PER_SEC) + thread->nextTrigger.tv_nsec;
+}
+
 /**
  * Get maximum priority for a thread
  */

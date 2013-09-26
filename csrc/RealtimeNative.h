@@ -57,6 +57,22 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriodToClock
 
 /*
  * Class:     us_ihmc_realtime_RealtimeNative
+ * Method:    setNextPeriod
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriod
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     us_ihmc_realtime_RealtimeNative
+ * Method:    getNextPeriod
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getNextPeriod
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     us_ihmc_realtime_RealtimeNative
  * Method:    getMaximumPriorityNative
  * Signature: ()I
  */

@@ -8,4 +8,10 @@ public class NonRealtimeThread extends Thread implements ThreadInterface
    {
       super(runnable);
    }
+
+   public void getNextTriggerTime(MonotonicTime nextTriggerTime)
+   {
+      throw new RuntimeException("Not available for non-realtime threads");
+      
+   }
 }
