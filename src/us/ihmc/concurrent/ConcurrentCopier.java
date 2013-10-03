@@ -66,6 +66,7 @@ public class ConcurrentCopier<T>
       }
    }
    
+   // returns an index that is not beingRead or nextToRead
    private int getNextWriteIndex(int currentState)
    {
       switch(currentState)
