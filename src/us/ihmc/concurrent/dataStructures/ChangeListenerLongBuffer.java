@@ -2,20 +2,20 @@ package us.ihmc.concurrent.dataStructures;
 
 import us.ihmc.util.RealtimeTools;
 
-public class ChangeListenerDoubleBuffer
+public class ChangeListenerLongBuffer
 {
    private final boolean[] valueChanged;
-   private final double[] values;
+   private final long[] values;
       
-   public ChangeListenerDoubleBuffer(int capacity)
+   public ChangeListenerLongBuffer(int capacity)
    {
       capacity = RealtimeTools.nextDivisibleBySixteen(capacity);
       
       valueChanged = new boolean[capacity];
-      values = new double[capacity];
+      values = new long[capacity];
    }
    
-   public void update(int index, double value)
+   public void update(int index, long value)
    {
       valueChanged[index] = true;
       values[index] = value;
@@ -40,12 +40,12 @@ public class ChangeListenerDoubleBuffer
       }
    }
    
-   public double getValue(int index)
+   public long getValue(int index)
    {
       return values[index];
    }
    
-   public static class Builder implements us.ihmc.concurrent.Builder<ChangeListenerDoubleBuffer>
+   public static class Builder implements us.ihmc.concurrent.Builder<ChangeListenerLongBuffer>
    {
       private final int capacity;
       
@@ -55,9 +55,9 @@ public class ChangeListenerDoubleBuffer
       }
 
     
-      public ChangeListenerDoubleBuffer newInstance()
+      public ChangeListenerLongBuffer newInstance()
       {
-         return new ChangeListenerDoubleBuffer(capacity);
+         return new ChangeListenerLongBuffer(capacity);
       }
       
    }
