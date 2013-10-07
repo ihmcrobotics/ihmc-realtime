@@ -41,6 +41,14 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_startThread
 
 /*
  * Class:     us_ihmc_realtime_RealtimeNative
+ * Method:    join
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     us_ihmc_realtime_RealtimeNative
  * Method:    waitForNextPeriod
  * Signature: (J)V
  */

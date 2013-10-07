@@ -14,6 +14,7 @@ public class RealtimeNative
    
    static native long createThread(Runnable target, int priority, boolean periodic, boolean startOnClock, long startSeconds, long startNanos, long periodSeconds, long periodNanos);
    static native int startThread(long threadID);
+   static native int join(long threadID);
    
    static native void waitForNextPeriod(long threadID);
 
@@ -39,6 +40,10 @@ public class RealtimeNative
    
    static native int getCurrentThreadPriority();
    static native int getCurrentThreadScheduler();
+   {
+      // TODO Auto-generated method stub
+      
+   }
 
 
 }

@@ -25,6 +25,8 @@ struct Thread
 
 	struct timespec nextTrigger;
 	struct timespec period;
+
+	int retVal;
 };
 
 JavaVM* globalVirtualMachine;
@@ -53,7 +55,10 @@ void* run(void* threadPtr)
 	delete thread;
 
 	releaseEnv(globalVirtualMachine);
-	return (void*)0;
+
+	thread->retVal = 0;
+	pthread_exit(&thread->retVal);
+	return NULL;
 }
 
 
@@ -163,6 +168,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_startThread(JNIEnv* 
 	param.__sched_priority = thread->priority;
 
 	JNIassert(env, pthread_attr_init(&attr) == 0);
+	JNIassert(env, pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE) == 0);
 	JNIassert(env, pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED) == 0);
 	JNIassert(env, pthread_attr_setschedpolicy(&attr, SCHED_POLICY) == 0);
 	JNIassert(env, pthread_attr_setschedparam(&attr, &param) == 0);
@@ -173,6 +179,19 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_startThread(JNIEnv* 
 	pthread_attr_destroy(&attr);
 
 	return err;
+}
+
+/**
+ * Wait till thread finishes
+ */
+JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
+  (JNIEnv *env, jclass klass, jlong threadPtr)
+{
+	Thread* thread = (Thread*) threadPtr;
+	int *retVal;
+	pthread_join(thread->thread, (void**) &retVal);
+
+	return *retVal;
 }
 
 /**
