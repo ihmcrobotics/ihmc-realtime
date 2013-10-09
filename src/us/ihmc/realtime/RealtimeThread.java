@@ -99,9 +99,9 @@ public class RealtimeThread implements Runnable, ThreadInterface
       return threadStatus;
    }
 
-   public void waitForNextPeriod()
+   public boolean waitForNextPeriod()
    {
-      RealtimeNative.waitForNextPeriod(threadID);
+      return RealtimeNative.waitForNextPeriod(threadID);
    }
    
    public void setNextPeriodToClock()
