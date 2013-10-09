@@ -72,7 +72,10 @@ public class RealtimeThread implements Runnable, ThreadInterface
          throw new IllegalThreadStateException("Thread already started");
       }
       
-      RealtimeNative.startThread(threadID);
+      if(RealtimeNative.startThread(threadID) != 0)
+      {
+         throw new RuntimeException("Cannot start realtime thread, do you have permission");
+      }
       
       threadStatus = ThreadStatus.STARTED;
    }
@@ -96,9 +99,9 @@ public class RealtimeThread implements Runnable, ThreadInterface
       return threadStatus;
    }
 
-   public boolean waitForNextPeriod()
+   public void waitForNextPeriod()
    {
-      return RealtimeNative.waitForNextPeriod(threadID);
+      RealtimeNative.waitForNextPeriod(threadID);
    }
    
    public void setNextPeriodToClock()
