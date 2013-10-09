@@ -1,4 +1,5 @@
 #include <time.h>
+#include <sys/time.h>
 #include <sched.h>
 #include <sys/mman.h>
 #include <iostream>
@@ -199,7 +200,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
  *
  * @param threadPtr 64bit pointer to Thread
  */
-JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JNIEnv* env, jclass klass,
+JNIEXPORT jboolean JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JNIEnv* env, jclass klass,
 		jlong threadPtr)
 {
 	Thread* thread = (Thread*) threadPtr;
@@ -210,7 +211,16 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JN
 
 	tsadd(&thread->nextTrigger, &thread->period);
 
-	clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &thread->nextTrigger, NULL);
+	timespec currentTime;
+	clock_gettime(CLOCK_MONOTONIC, &currentTime);
+
+	if(tsLessThan(&thread->nextTrigger, &currentTime))
+	{
+		return false;
+	}
+
+	while(clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &thread->nextTrigger, NULL) == EINTR);
+	return true;
 }
 
 /**

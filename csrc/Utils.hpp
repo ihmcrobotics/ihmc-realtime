@@ -130,3 +130,22 @@ static inline void tsadd(struct timespec *ts1, struct timespec *ts2)
 	ts1->tv_nsec += ts2->tv_nsec;
 	tsnorm(ts1);
 }
+
+
+/**
+ * Check if ts1 < ts2
+ *
+ * @param ts1
+ * @param ts2
+ */
+static inline bool tsLessThan(struct timespec *ts1, struct timespec *ts2)
+{
+	if(ts1->tv_sec == ts2->tv_sec)
+	{
+		return ts1->tv_nsec < ts2->tv_nsec;
+	}
+	else
+	{
+		return ts1->tv_sec < ts2->tv_sec;
+	}
+}
