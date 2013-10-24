@@ -109,6 +109,11 @@ public class RealtimeThread implements Runnable, ThreadInterface
       RealtimeNative.setNextPeriodToClock(threadID);
    }
    
+   public long getCurrentMonotonicClockTime()
+   {
+      return RealtimeNative.getCurrentTimeNative();
+   }
+   
    public static SchedulerAlgorithm getCurrentThreadScheduler()
    {
       int sched = RealtimeNative.getCurrentThreadScheduler();
