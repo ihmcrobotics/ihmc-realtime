@@ -65,6 +65,7 @@ public class RealtimeThread implements Runnable, ThreadInterface
       
    }
 
+   @Override
    public final synchronized void start()
    {
       if(threadStatus != ThreadStatus.NEW)
@@ -86,6 +87,7 @@ public class RealtimeThread implements Runnable, ThreadInterface
       run();
    }
 
+   @Override
    public void run()
    {
       if(runnable != null)
@@ -104,9 +106,15 @@ public class RealtimeThread implements Runnable, ThreadInterface
       return RealtimeNative.waitForNextPeriod(threadID);
    }
    
+   
    public void setNextPeriodToClock()
    {
       RealtimeNative.setNextPeriodToClock(threadID);
+   }
+   
+   public boolean waitUntil(MonotonicTime time) 
+   {
+      return RealtimeNative.waitUntil(threadID, time.seconds(), time.nanoseconds());
    }
    
    public long getCurrentMonotonicClockTime()
@@ -151,6 +159,7 @@ public class RealtimeThread implements Runnable, ThreadInterface
       return currentThread;
    }
 
+   @Override
    public void getNextTriggerTime(MonotonicTime timeToPack)
    {
       long timestamp = RealtimeNative.getNextPeriod(threadID);

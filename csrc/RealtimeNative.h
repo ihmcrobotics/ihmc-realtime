@@ -50,10 +50,18 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
 /*
  * Class:     us_ihmc_realtime_RealtimeNative
  * Method:    waitForNextPeriod
- * Signature: (J)V
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod
   (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     us_ihmc_realtime_RealtimeNative
+ * Method:    waitUntil
+ * Signature: (JJJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_us_ihmc_realtime_RealtimeNative_waitUntil
+  (JNIEnv *, jclass, jlong, jlong, jlong);
 
 /*
  * Class:     us_ihmc_realtime_RealtimeNative

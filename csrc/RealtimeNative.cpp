@@ -195,6 +195,21 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
 	return *retVal;
 }
 
+bool waitForAbsoluteTime(timespec* ts)
+{
+	timespec currentTime;
+	clock_gettime(CLOCK_MONOTONIC, &currentTime);
+
+	if(tsLessThan(ts, &currentTime))
+	{
+		return false;
+	}
+
+	while(clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, ts, NULL) == EINTR);
+	return true;
+}
+
+
 /**
  * Wait for next period in thread
  *
@@ -211,16 +226,25 @@ JNIEXPORT jboolean JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPerio
 
 	tsadd(&thread->nextTrigger, &thread->period);
 
-	timespec currentTime;
-	clock_gettime(CLOCK_MONOTONIC, &currentTime);
+	return waitForAbsoluteTime(&thread->nextTrigger);
+}
 
-	if(tsLessThan(&thread->nextTrigger, &currentTime))
-	{
-		return false;
-	}
+/**
+ * Wait for a specific time
+ *
+ * @param threadPtr 64bit pointer to Thread
+ * @param seconds Monotonic time, seconds part
+ * @param nanoseconds Monotonic time, nanoseconds part
+ */
+JNIEXPORT jboolean JNICALL Java_us_ihmc_realtime_RealtimeNative_waitUntil (JNIEnv* env , jclass klass, jlong threadPtr, jlong seconds, jlong nanoseconds)
+{
+	Thread* thread = (Thread*) threadPtr;
+	timespec ts;
+	ts.tv_sec = seconds;
+	ts.tv_nsec = nanoseconds;
+	tsnorm(&ts);
 
-	while(clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &thread->nextTrigger, NULL) == EINTR);
-	return true;
+	return waitForAbsoluteTime(&ts);
 }
 
 /**
