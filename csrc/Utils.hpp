@@ -149,3 +149,10 @@ static inline bool tsLessThan(struct timespec *ts1, struct timespec *ts2)
 		return ts1->tv_sec < ts2->tv_sec;
 	}
 }
+
+static inline long tsdelta(struct timespec* start, struct timespec* end)
+{
+   long delta = (end->tv_sec - start->tv_sec) * 1000000000L;
+   delta += end->tv_nsec - start->tv_nsec;
+   return delta;
+}

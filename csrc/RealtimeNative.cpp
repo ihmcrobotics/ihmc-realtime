@@ -195,18 +195,20 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
 	return *retVal;
 }
 
-bool waitForAbsoluteTime(timespec* ts)
+long waitForAbsoluteTime(timespec* ts)
 {
 	timespec currentTime;
 	clock_gettime(CLOCK_MONOTONIC, &currentTime);
 
-	if(tsLessThan(ts, &currentTime))
+	long delta = tsdelta(&currentTime, ts);
+
+	if(delta < 0)
 	{
-		return false;
+		return delta;
 	}
 
 	while(clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, ts, NULL) == EINTR);
-	return true;
+	return delta;
 }
 
 
@@ -215,7 +217,7 @@ bool waitForAbsoluteTime(timespec* ts)
  *
  * @param threadPtr 64bit pointer to Thread
  */
-JNIEXPORT jboolean JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JNIEnv* env, jclass klass,
+JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JNIEnv* env, jclass klass,
 		jlong threadPtr)
 {
 	Thread* thread = (Thread*) threadPtr;
@@ -236,7 +238,7 @@ JNIEXPORT jboolean JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPerio
  * @param seconds Monotonic time, seconds part
  * @param nanoseconds Monotonic time, nanoseconds part
  */
-JNIEXPORT jboolean JNICALL Java_us_ihmc_realtime_RealtimeNative_waitUntil (JNIEnv* env , jclass klass, jlong threadPtr, jlong seconds, jlong nanoseconds)
+JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_waitUntil (JNIEnv* env , jclass klass, jlong threadPtr, jlong seconds, jlong nanoseconds)
 {
 	Thread* thread = (Thread*) threadPtr;
 	timespec ts;

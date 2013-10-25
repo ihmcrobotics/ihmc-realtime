@@ -101,7 +101,12 @@ public class RealtimeThread implements Runnable, ThreadInterface
       return threadStatus;
    }
 
-   public boolean waitForNextPeriod()
+   
+   /**
+    * 
+    * @return time waiting
+    */
+   public long waitForNextPeriod()
    {
       return RealtimeNative.waitForNextPeriod(threadID);
    }
@@ -112,7 +117,7 @@ public class RealtimeThread implements Runnable, ThreadInterface
       RealtimeNative.setNextPeriodToClock(threadID);
    }
    
-   public boolean waitUntil(MonotonicTime time) 
+   public long waitUntil(MonotonicTime time) 
    {
       return RealtimeNative.waitUntil(threadID, time.seconds(), time.nanoseconds());
    }
