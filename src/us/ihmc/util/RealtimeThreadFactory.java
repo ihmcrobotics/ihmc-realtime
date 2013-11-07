@@ -16,8 +16,9 @@ public class RealtimeThreadFactory implements ThreadFactory
       this.periodicParameters = periodicParameters;
    }
 
-   public ThreadInterface createThread(Runnable runnable)
+   public ThreadInterface createThread(Runnable runnable, String name)
    {
+      // native thread library doesn't use names
       return new RealtimeThread(priorityParameters, periodicParameters, runnable);
    }
    

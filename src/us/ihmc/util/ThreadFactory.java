@@ -2,5 +2,5 @@ package us.ihmc.util;
 
 public interface ThreadFactory
 {
-   public ThreadInterface createThread(Runnable runnable);
+   public ThreadInterface createThread(Runnable runnable, String name);
 }
