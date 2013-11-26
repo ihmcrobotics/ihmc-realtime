@@ -1,6 +1,5 @@
 package us.ihmc.util;
 
-import us.ihmc.affinity.Affinity;
 import us.ihmc.affinity.Processor;
 import us.ihmc.realtime.PeriodicParameters;
 import us.ihmc.realtime.PriorityParameters;
@@ -28,7 +27,7 @@ public class RealtimeThreadFactory implements ThreadFactory
       
       if(processors != null && processors.length > 0)
       {
-         Affinity.setAffinity(realtimeThread, processors);
+         realtimeThread.setAffinity(processors);
       }
       return realtimeThread;
    }

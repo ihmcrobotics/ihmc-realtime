@@ -1,5 +1,7 @@
 package us.ihmc.realtime;
 
+import us.ihmc.affinity.Affinity;
+import us.ihmc.affinity.Processor;
 import us.ihmc.util.ThreadInterface;
 
 
@@ -26,6 +28,8 @@ public class RealtimeThread implements Runnable, ThreadInterface
    private final long threadID;
    
    protected final Runnable runnable;
+   
+   private Processor[] affinity = null;
 
    
    public RealtimeThread(PriorityParameters priorityParameters)
@@ -64,6 +68,16 @@ public class RealtimeThread implements Runnable, ThreadInterface
       this.runnable = runnable;
       
    }
+   
+   public final synchronized void setAffinity(Processor... processors)
+   {
+      this.affinity = processors;
+
+      if(threadStatus == ThreadStatus.STARTED)
+      {
+         Affinity.setAffinity(this, processors);
+      }
+   }
 
    @Override
    public final synchronized void start()
@@ -76,6 +90,11 @@ public class RealtimeThread implements Runnable, ThreadInterface
       if(RealtimeNative.startThread(threadID) != 0)
       {
          throw new RuntimeException("Cannot start realtime thread, do you have permission");
+      }
+      
+      if(affinity != null)
+      {
+         Affinity.setAffinity(this, affinity);
       }
       
       threadStatus = ThreadStatus.STARTED;
