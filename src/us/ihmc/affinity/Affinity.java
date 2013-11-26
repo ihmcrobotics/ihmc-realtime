@@ -40,21 +40,21 @@ public class Affinity
 
    public static void setAffinity(RealtimeThread thread, Processor... processors)
    {
-      setAffinity(thread, getCPUIDs(processors));
+//      setAffinity(thread, getCPUIDs(processors));
    }
 
    public static void setAffinity(RealtimeThread thread, Core... cores)
    {
-      setAffinity(thread, getCPUIDs(cores));
+//      setAffinity(thread, getCPUIDs(cores));
    }
 
    public static void setAffinity(Processor... processors)
    {
-      setAffinity(getCPUIDs(processors));
+//      setAffinity(getCPUIDs(processors));
    }
 
    public static void setAffinity(Core... cores)
    {
-      setAffinity(getCPUIDs(cores));
+//      setAffinity(getCPUIDs(cores));
    }
 }
