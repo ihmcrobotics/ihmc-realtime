@@ -180,4 +180,9 @@ public class RealtimeThread implements Runnable, ThreadInterface
    {
       return RealtimeNative.join(threadID);
    }
+
+   public long getThreadID()
+   {
+      return threadID;
+   }
 }

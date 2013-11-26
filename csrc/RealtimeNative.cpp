@@ -8,27 +8,13 @@
 
 #include "RealtimeNative.h"
 #include "Utils.hpp"
+#include "Thread.h"
 
 const int SCHED_POLICY = SCHED_RR;
 
 #define NSEC_PER_SEC 1000000000
 
-struct Thread
-{
-	pthread_t thread;
-	jobject javaThread;
-	jmethodID methodID;
 
-	int priority;
-
-	bool periodic;
-	bool setTriggerToClock;
-
-	struct timespec nextTrigger;
-	struct timespec period;
-
-	int retVal;
-};
 
 JavaVM* globalVirtualMachine;
 

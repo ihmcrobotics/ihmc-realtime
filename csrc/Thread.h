@@ -1,33 +1,26 @@
-/*
- * Thread.h
- *
- *  Created on: Aug 28, 2013
- *      Author: jesper
- */
+#include <pthread.h>
+#include <jni.h>
+#include <time.h>
 
 #ifndef THREAD_H_
 #define THREAD_H_
 
-#include <time.h>
-#include <jni.h>
 
-class Thread
+struct Thread
 {
-private:
-
+	pthread_t thread;
 	jobject javaThread;
+	jmethodID methodID;
 
 	int priority;
 
 	bool periodic;
+	bool setTriggerToClock;
 
 	struct timespec nextTrigger;
 	struct timespec period;
 
-
-public:
-	Thread(jobject javaThread, int priority, bool periodic, struct timespec start, struct timespec period);
-
+	int retVal;
 };
 
 #endif /* THREAD_H_ */
