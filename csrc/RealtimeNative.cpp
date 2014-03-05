@@ -4,7 +4,10 @@
 #include <sys/mman.h>
 #include <iostream>
 #include <pthread.h>
-#include <sys/capability.h>
+
+#if __linux__
+	#include <sys/capability.h>
+#endif
 
 #include "RealtimeNative.h"
 #include "Utils.hpp"
@@ -54,6 +57,7 @@ void* run(void* threadPtr)
  */
 JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_mlockall(JNIEnv* env, jclass klass)
 {
+#if __linux__
 	struct __user_cap_header_struct cap_header_data;
 	cap_header_data.pid = getpid();
 	cap_header_data.version = _LINUX_CAPABILITY_VERSION;
@@ -69,6 +73,9 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_mlockall(JNIEnv* env
 	{
 		JNIassert(env, mlockall(MCL_CURRENT|MCL_FUTURE) == 0);
 	}
+#else
+	std::cerr << "Not locking memory on non-linux OS" << std::endl;
+#endif
 }
 
 /**
