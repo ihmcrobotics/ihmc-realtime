@@ -141,7 +141,7 @@ public class RealtimeThread implements Runnable, ThreadInterface
       return RealtimeNative.waitUntil(threadID, time.seconds(), time.nanoseconds());
    }
    
-   public long getCurrentMonotonicClockTime()
+   public static long getCurrentMonotonicClockTime()
    {
       return RealtimeNative.getCurrentTimeNative();
    }
