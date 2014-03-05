@@ -12,6 +12,7 @@
 JNIEXPORT void JNICALL Java_us_ihmc_affinity_Affinity_setAffinity___3I
   (JNIEnv *env, jclass, jintArray jcpus)
 {
+#ifndef __MACH__
 	cpu_set_t set;
 	CPU_ZERO(&set);
 
@@ -26,6 +27,7 @@ JNIEXPORT void JNICALL Java_us_ihmc_affinity_Affinity_setAffinity___3I
 	{
 		throwRuntimeException(env, "sched_setaffinity: Cannot set processor affinity. Make sure that the CPUS exist");
 	}
+#endif
 }
 
 /*
@@ -36,6 +38,7 @@ JNIEXPORT void JNICALL Java_us_ihmc_affinity_Affinity_setAffinity___3I
 JNIEXPORT void JNICALL Java_us_ihmc_affinity_Affinity_setAffinity__J_3I
   (JNIEnv *env, jclass, jlong threadID, jintArray jcpus)
 {
+#ifndef __MACH__
 	cpu_set_t set;
 	CPU_ZERO(&set);
 
@@ -51,4 +54,5 @@ JNIEXPORT void JNICALL Java_us_ihmc_affinity_Affinity_setAffinity__J_3I
 	{
 		throwRuntimeException(env, "pthread_setaffinity_np: Cannot set processor affinity. Make sure that the CPUS exist");
 	}
+#endif
 }

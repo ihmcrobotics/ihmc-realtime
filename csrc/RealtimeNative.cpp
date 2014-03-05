@@ -9,6 +9,11 @@
 	#include <sys/capability.h>
 #endif
 
+#if __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 #include "RealtimeNative.h"
 #include "Utils.hpp"
 #include "Thread.h"
@@ -20,6 +25,26 @@ const int SCHED_POLICY = SCHED_RR;
 
 
 JavaVM* globalVirtualMachine;
+
+
+int magical_gettime(struct timespec *tp)
+{
+  #ifdef __MACH__
+    clock_serv_t cclock;
+    mach_timespec_t mts;
+    host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
+    kern_return_t ret = clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+    tp->tv_sec = mts.tv_sec;
+    tp->tv_nsec = mts.tv_nsec;
+    if(ret != KERN_SUCCESS)
+      return -1;
+    else
+      return 0;
+  #else
+    return clock_gettime(CLOCK_MONOTONIC, tp);
+  #endif
+}
 
 void* run(void* threadPtr)
 {
@@ -35,7 +60,7 @@ void* run(void* threadPtr)
 
 	if(thread->periodic && thread->setTriggerToClock)
 	{
-		JNIassert(env, clock_gettime(CLOCK_MONOTONIC, &thread->nextTrigger) == 0);
+	        JNIassert(env, magical_gettime(&thread->nextTrigger) == 0);
 		thread->setTriggerToClock = false;
 	}
 
@@ -159,7 +184,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_startThread(JNIEnv* 
 
 	pthread_attr_t attr;
 	sched_param param;
-	param.__sched_priority = thread->priority;
+	param.SCHED_PRIORITY = thread->priority;
 
 	JNIassert(env, pthread_attr_init(&attr) == 0);
 	JNIassert(env, pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE) == 0);
@@ -191,7 +216,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
 long waitForAbsoluteTime(timespec* ts)
 {
 	timespec currentTime;
-	clock_gettime(CLOCK_MONOTONIC, &currentTime);
+	magical_gettime(&currentTime);
 
 	long delta = tsdelta(&currentTime, ts);
 
@@ -200,7 +225,11 @@ long waitForAbsoluteTime(timespec* ts)
 		return delta;
 	}
 
+	#ifdef __MACH__
+	while(nanosleep(ts, NULL) == EINTR);
+	#else
 	while(clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, ts, NULL) == EINTR);
+        #endif
 	return delta;
 }
 
@@ -256,7 +285,7 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriodToClock
 		throwRuntimeException(env, "Thread is not periodic");
 	}
 
-	JNIassert(env, clock_gettime(CLOCK_MONOTONIC, &thread->nextTrigger) == 0);
+	JNIassert(env, magical_gettime(&thread->nextTrigger) == 0);
 	thread->setTriggerToClock = false;
 }
 
@@ -312,7 +341,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_getMinimumPriorityNa
 JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentTimeNative(JNIEnv* env, jclass klass)
 {
 	struct timespec t;
-	JNIassert(env, clock_gettime(CLOCK_MONOTONIC, &t) == 0);
+	JNIassert(env, magical_gettime(&t) == 0);
 
 	return (((long long) t.tv_sec) * NSEC_PER_SEC) + t.tv_nsec;
 }
@@ -325,7 +354,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentThreadPrio
 
 	JNIassert(env, pthread_getschedparam(pthread_self(), &policy, &priority) == 0);
 
-	return priority.__sched_priority;
+	return priority.SCHED_PRIORITY;
 
 }
 

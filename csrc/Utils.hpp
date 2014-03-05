@@ -11,8 +11,13 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
-const int NSEC_PER_SEC = 1000000000;
+#ifdef __MACH__
+#define SCHED_PRIORITY sched_priority
+#else
+#define SCHED_PRIORITY __sched_priority
+#endif
 
+#define NSEC_PER_SEC 1000000000
 
 /**
  * Check if cond == true, otherwise throw a Java RuntimeException
@@ -47,7 +52,7 @@ inline JNIEnv* getEnv(JavaVM* vm)
 
 		JNIassert(env, pthread_getschedparam(pthread_self(), &policy, &priority) == 0);
 
-		std::cout << "Attaching native thread " << ((long int)syscall(SYS_gettid)) << " with priority " << priority.__sched_priority << " to JVM" << std::endl;
+		std::cout << "Attaching native thread " << ((long int)syscall(SYS_gettid)) << " with priority " << priority.SCHED_PRIORITY << " to JVM" << std::endl;
 		if (vm->AttachCurrentThread((void **) &env, NULL)
 				!= 0)
 		{
