@@ -52,7 +52,12 @@ inline JNIEnv* getEnv(JavaVM* vm)
 
 		JNIassert(env, pthread_getschedparam(pthread_self(), &policy, &priority) == 0);
 
+        #if __MACH__
+        std::cout << "Attaching native thread " << (syscall(SYS_thread_selfid)) << " with priority " << priority.SCHED_PRIORITY << " to JVM" << std::endl;
+        #else
 		std::cout << "Attaching native thread " << ((long int)syscall(SYS_gettid)) << " with priority " << priority.SCHED_PRIORITY << " to JVM" << std::endl;
+		#endif
+
 		if (vm->AttachCurrentThread((void **) &env, NULL)
 				!= 0)
 		{
