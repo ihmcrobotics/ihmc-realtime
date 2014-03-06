@@ -11,7 +11,10 @@
 
 #if __MACH__
 #include <mach/clock.h>
+#include <mach/clock_types.h>
 #include <mach/mach.h>
+#include <mach/thread_policy.h>
+#include <mach/mach_init.h>
 
 clock_serv_t cclock;
 mach_timespec_t mts;
@@ -53,14 +56,28 @@ int magical_gettime(struct timespec *tp)
   #endif
 }
 
+#ifdef __MACH__
+#if defined(__i386__)
+static __inline__ unsigned long long rdtsc(void) {
+    unsigned long long int x;
+    __asm__ volatile (".byte 0x0f, 0x31" : "=A" (x));
+    return x;
+
+}
+
+#elif defined(__x86_64__)
+static __inline__ unsigned long long rdtsc(void) {
+    unsigned hi, lo;
+    __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
+    return ( (unsigned long long)lo)|( ((unsigned long long)hi)<<32 );
+}
+#endif
+#endif
+
 void* run(void* threadPtr)
 {
 	Thread* thread = (Thread*) threadPtr;
 	JNIEnv* env = getEnv(globalVirtualMachine);
-
-	#ifdef __MACH
-
-	#endif
 
 	if(env == 0)
 	{
@@ -205,6 +222,35 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_startThread(JNIEnv* 
 
 	int err = pthread_create(&thread->thread, &attr, run, thread);
 
+	#ifdef __MACH__
+	    struct timespec timespec;
+       	timespec.tv_nsec = 0;
+       	timespec.tv_sec = 1;
+
+   	    long long start = rdtsc();
+   	    nanosleep(&timespec, NULL);
+   	    long long HZ = rdtsc() - start;
+
+        thread_port_t port = pthread_mach_thread_np(thread->thread);
+   	    struct thread_time_constraint_policy ttcpolicy;
+
+        long period = (thread->period.tv_nsec * 1e9) + (thread->period.tv_sec);
+
+        if(period > 0)
+        {
+            ttcpolicy.period = HZ / (period * 1.0e-9);
+        }
+        else
+        {
+            ttcpolicy.period = 0;
+        }
+
+        ttcpolicy.computation = ttcpolicy.period;
+        ttcpolicy.constraint = ttcpolicy.period;
+        ttcpolicy.preemptible = 0;
+
+        thread_policy_set(port, THREAD_TIME_CONSTRAINT_POLICY, (thread_policy_t)&ttcpolicy, THREAD_TIME_CONSTRAINT_POLICY_COUNT);
+  	#endif
 
 	pthread_attr_destroy(&attr);
 
