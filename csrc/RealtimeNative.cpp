@@ -19,6 +19,8 @@
 #include "Thread.h"
 
 const int SCHED_POLICY = SCHED_RR;
+clock_serv_t cclock;
+mach_timespec_t mts;
 
 #define NSEC_PER_SEC 1000000000
 
@@ -30,17 +32,17 @@ JavaVM* globalVirtualMachine;
 int magical_gettime(struct timespec *tp)
 {
   #ifdef __MACH__
-    clock_serv_t cclock;
-    mach_timespec_t mts;
-    host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
     kern_return_t ret = clock_get_time(cclock, &mts);
-    mach_port_deallocate(mach_task_self(), cclock);
-    tp->tv_sec = mts.tv_sec;
-    tp->tv_nsec = mts.tv_nsec;
     if(ret != KERN_SUCCESS)
+    {
       return -1;
+    }
     else
+    {
+      tp->tv_sec = mts.tv_sec;
+      tp->tv_nsec = mts.tv_nsec;
       return 0;
+    }
   #else
     return clock_gettime(CLOCK_MONOTONIC, tp);
   #endif
@@ -50,6 +52,10 @@ void* run(void* threadPtr)
 {
 	Thread* thread = (Thread*) threadPtr;
 	JNIEnv* env = getEnv(globalVirtualMachine);
+
+	#ifdef __MACH
+	host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
+	#endif
 
 	if(env == 0)
 	{
