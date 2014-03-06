@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_us_ihmc_affinity_Affinity_setAffinity___3I
     thread_port_t port = pthread_mach_thread_np(pthread_self());
     struct thread_affinity_policy policy;
 
-    policy.affinity_tag = arrayLength;
+    policy.affinity_tag = cpus[0];
 
     int ret = thread_policy_set(port, THREAD_AFFINITY_POLICY, (thread_policy_t) &policy, THREAD_AFFINITY_POLICY_COUNT);
 
@@ -76,7 +76,7 @@ JNIEXPORT void JNICALL Java_us_ihmc_affinity_Affinity_setAffinity__J_3I
     thread_port_t port = pthread_mach_thread_np(thread->thread);
     struct thread_affinity_policy policy;
 
-    policy.affinity_tag = arrayLength;
+    policy.affinity_tag = cpus[0];
 
     int ret = thread_policy_set(port, THREAD_AFFINITY_POLICY, (thread_policy_t) &policy, THREAD_AFFINITY_POLICY_COUNT);
 

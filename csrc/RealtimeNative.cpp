@@ -12,6 +12,10 @@
 #if __MACH__
 #include <mach/clock.h>
 #include <mach/mach.h>
+
+clock_serv_t cclock;
+mach_timespec_t mts;
+bool clockInitialized = false;
 #endif
 
 #include "RealtimeNative.h"
@@ -19,12 +23,8 @@
 #include "Thread.h"
 
 const int SCHED_POLICY = SCHED_RR;
-clock_serv_t cclock;
-mach_timespec_t mts;
 
 #define NSEC_PER_SEC 1000000000
-
-
 
 JavaVM* globalVirtualMachine;
 
@@ -32,6 +32,11 @@ JavaVM* globalVirtualMachine;
 int magical_gettime(struct timespec *tp)
 {
   #ifdef __MACH__
+    if(!clockInitialized)
+    {
+        host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
+        clockInitialized = true;
+    }
     kern_return_t ret = clock_get_time(cclock, &mts);
     if(ret != KERN_SUCCESS)
     {
@@ -54,7 +59,7 @@ void* run(void* threadPtr)
 	JNIEnv* env = getEnv(globalVirtualMachine);
 
 	#ifdef __MACH
-	host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
+
 	#endif
 
 	if(env == 0)
