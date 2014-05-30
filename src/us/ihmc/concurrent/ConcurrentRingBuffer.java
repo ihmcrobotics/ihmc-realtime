@@ -159,6 +159,22 @@ public class ConcurrentRingBuffer<T>
    }
    
    /**
+    * Get next data object. Run @see{poll} to update the read limit. 
+    * Does not advance the read position.
+    * 
+    * @return new data, null if no new data
+    */
+   public T peek()
+   {
+      if(readPosition >= readLimit)
+      {
+         return null;
+      }
+      
+      return getObject(readPosition + 1);
+   }
+   
+   /**
     * Flushes read objects, making them available for writing. Call after @see{read}
     */
    public void flush()
