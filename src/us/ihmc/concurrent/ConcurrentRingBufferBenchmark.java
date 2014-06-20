@@ -13,24 +13,17 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  *    
- *    Written by Alex Lesman with assistance from IHMC team members
+ *    Written by Jesper Smith with assistance from IHMC team members
  */
 package us.ihmc.concurrent;
 
-import static org.junit.Assert.assertTrue;
 
-import java.util.Random;
-
-import org.junit.Test;
-
-public class ConcurrentRingBufferTest
+public class ConcurrentRingBufferBenchmark
 {
-   @Test
-   public void test()
+   public static void main(String[] args)
    {
-      final long iterations = 100000000L;
+      final long iterations = Long.valueOf(args[0]);
       final long writesPerIteration = 1L;
-      final long seed = 89126450L;
       
       final ConcurrentRingBuffer<MutableLong> concurrentRingBuffer = new ConcurrentRingBuffer<MutableLong>(new MutableLongBuilder(), 1024);
             
@@ -39,14 +32,13 @@ public class ConcurrentRingBufferTest
       {
          public void run()
          {
-            Random random = new Random(seed);
             for(long value = 0; value < iterations; value++)
             {
                for(int y = 0; y < writesPerIteration; y++)
                {
                   MutableLong nextValue;
                   while((nextValue = concurrentRingBuffer.next()) == null);  // Spinlock
-                  nextValue.value = random.nextLong();
+                  nextValue.value = value;
                }
                concurrentRingBuffer.commit();
             }
@@ -58,7 +50,7 @@ public class ConcurrentRingBufferTest
      
       boolean running = true; 
       long iteration = 0;
-      Random random = new Random(seed);
+      long start = System.nanoTime();
       while(running)
       {
          if(concurrentRingBuffer.poll())
@@ -66,7 +58,10 @@ public class ConcurrentRingBufferTest
             MutableLong value;
             while((value = concurrentRingBuffer.read()) != null)
             {
-               assertTrue(random.nextLong() == value.value);
+               if(value.value != iteration)
+               {
+                  throw new RuntimeException("Values not equal");
+               }
                
                ++iteration;
                if(iteration >= (iterations-1) * writesPerIteration)
@@ -78,15 +73,21 @@ public class ConcurrentRingBufferTest
             concurrentRingBuffer.flush();
          }
       }
+      long executionTime = System.nanoTime() - start;
+      double executionTimeS = executionTime / 1000000000.0;
+      double average = iterations / executionTimeS;
+      
+      System.out.println(iterations + " iterations, total execution time: " + executionTime + "ns; " + executionTimeS + "s.");
+      System.out.println("Average: " + average + " iterations/s");
    }
-
-   private class MutableLong
+   
+   private static class MutableLong
    {
       public long value;
 
    }
 
-   public class MutableLongBuilder implements Builder<MutableLong>
+   private static class MutableLongBuilder implements Builder<MutableLong>
    {
       
       public MutableLong newInstance()
@@ -94,4 +95,6 @@ public class ConcurrentRingBufferTest
          return new MutableLong();
       }
    }
+
+
 }
