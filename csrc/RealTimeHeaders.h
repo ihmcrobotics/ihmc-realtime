@@ -13,32 +13,31 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  *
- *    Written by Jesper Smith with assistance from IHMC team members
+ *    Written by Doug Stephen with assistance from IHMC team members
  */
 
-#include <pthread.h>
-#include <jni.h>
-#include <time.h>
+#ifndef IHMC_RealTimeHeaders_h
+#define IHMC_RealTimeHeaders_h
 
-#ifndef THREAD_H_
-#define THREAD_H_
+#if __linux__
+#include <sys/capability.h>
+#endif
 
+#if __MACH__
+#include <mach/clock.h>
+#include <mach/clock_types.h>
+#include <mach/mach.h>
+#include <mach/thread_policy.h>
+#include <mach/mach_init.h>
+#include <mach/mach_time.h>
 
-struct Thread
-{
-	pthread_t thread;
-	jobject javaThread;
-	jmethodID methodID;
+extern clock_serv_t cclock;
+extern mach_timespec_t mts;
+extern bool clockInitialized;
 
-	int priority;
+#define SCHED_PRIORITY sched_priority
+#else
+#define SCHED_PRIORITY __sched_priority
+#endif
 
-	bool periodic;
-	bool setTriggerToClock;
-
-	struct timespec nextTrigger;
-	struct timespec period;
-
-	int retVal;
-};
-
-#endif /* THREAD_H_ */
+#endif

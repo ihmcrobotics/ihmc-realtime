@@ -1,25 +1,28 @@
+/*
+ *   Copyright 2014 Florida Institute for Human and Machine Cognition (IHMC)
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ *    Written by Jesper Smith and Doug Stephen with assistance from IHMC team members
+ */
+
 #include <time.h>
 #include <sys/time.h>
 #include <sched.h>
 #include <sys/mman.h>
 #include <iostream>
 #include <pthread.h>
-
-#if __linux__
-	#include <sys/capability.h>
-#endif
-
-#if __MACH__
-#include <mach/clock.h>
-#include <mach/clock_types.h>
-#include <mach/mach.h>
-#include <mach/thread_policy.h>
-#include <mach/mach_init.h>
-
-clock_serv_t cclock;
-mach_timespec_t mts;
-bool clockInitialized = false;
-#endif
+#include <stdint.h>
 
 #include "RealtimeNative.h"
 #include "Utils.hpp"
@@ -27,51 +30,16 @@ bool clockInitialized = false;
 
 const int SCHED_POLICY = SCHED_RR;
 
+#ifndef NSEC_PER_SEC
 #define NSEC_PER_SEC 1000000000
+#endif
 
 JavaVM* globalVirtualMachine;
 
-
-int magical_gettime(struct timespec *tp)
-{
-  #ifdef __MACH__
-    if(!clockInitialized)
-    {
-        host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
-        clockInitialized = true;
-    }
-    kern_return_t ret = clock_get_time(cclock, &mts);
-    if(ret != KERN_SUCCESS)
-    {
-      return -1;
-    }
-    else
-    {
-      tp->tv_sec = mts.tv_sec;
-      tp->tv_nsec = mts.tv_nsec;
-      return 0;
-    }
-  #else
-    return clock_gettime(CLOCK_MONOTONIC, tp);
-  #endif
-}
-
-#ifdef __MACH__
-#if defined(__i386__)
-static __inline__ unsigned long long rdtsc(void) {
-    unsigned long long int x;
-    __asm__ volatile (".byte 0x0f, 0x31" : "=A" (x));
-    return x;
-
-}
-
-#elif defined(__x86_64__)
-static __inline__ unsigned long long rdtsc(void) {
-    unsigned hi, lo;
-    __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
-    return ( (unsigned long long)lo)|( ((unsigned long long)hi)<<32 );
-}
-#endif
+#if __MACH__
+clock_serv_t cclock;
+mach_timespec_t mts;
+bool clockInitialized = false;
 #endif
 
 void* run(void* threadPtr)
@@ -88,7 +56,7 @@ void* run(void* threadPtr)
 
 	if(thread->periodic && thread->setTriggerToClock)
 	{
-	        JNIassert(env, magical_gettime(&thread->nextTrigger) == 0);
+	        JNIassert(env, system_monotonic_gettime(&thread->nextTrigger) == 0);
 		thread->setTriggerToClock = false;
 	}
 
@@ -221,36 +189,10 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_startThread(JNIEnv* 
 	JNIassert(env, pthread_attr_setschedparam(&attr, &param) == 0);
 
 	int err = pthread_create(&thread->thread, &attr, run, thread);
-
-	#ifdef __MACH__
-	    struct timespec timespec;
-       	timespec.tv_nsec = 0;
-       	timespec.tv_sec = 1;
-
-   	    long long start = rdtsc();
-   	    nanosleep(&timespec, NULL);
-   	    long long HZ = rdtsc() - start;
-
-        thread_port_t port = pthread_mach_thread_np(thread->thread);
-   	    struct thread_time_constraint_policy ttcpolicy;
-
-        long period = (thread->period.tv_nsec * 1e9) + (thread->period.tv_sec);
-
-        if(period > 0)
-        {
-            ttcpolicy.period = HZ / (period * 1.0e-9);
-        }
-        else
-        {
-            ttcpolicy.period = 0;
-        }
-
-        ttcpolicy.computation = ttcpolicy.period;
-        ttcpolicy.constraint = ttcpolicy.period;
-        ttcpolicy.preemptible = 0;
-
-        thread_policy_set(port, THREAD_TIME_CONSTRAINT_POLICY, (thread_policy_t)&ttcpolicy, THREAD_TIME_CONSTRAINT_POLICY_COUNT);
-  	#endif
+    
+#ifdef __MACH__
+    set_mach_thread_params(env, thread);
+#endif
 
 	pthread_attr_destroy(&attr);
 
@@ -273,7 +215,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
 long waitForAbsoluteTime(timespec* ts)
 {
 	timespec currentTime;
-	magical_gettime(&currentTime);
+	system_monotonic_gettime(&currentTime);
 
 	long delta = tsdelta(&currentTime, ts);
 
@@ -342,7 +284,7 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriodToClock
 		throwRuntimeException(env, "Thread is not periodic");
 	}
 
-	JNIassert(env, magical_gettime(&thread->nextTrigger) == 0);
+	JNIassert(env, system_monotonic_gettime(&thread->nextTrigger) == 0);
 	thread->setTriggerToClock = false;
 }
 
@@ -398,7 +340,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_getMinimumPriorityNa
 JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentTimeNative(JNIEnv* env, jclass klass)
 {
 	struct timespec t;
-	JNIassert(env, magical_gettime(&t) == 0);
+	JNIassert(env, system_monotonic_gettime(&t) == 0);
 
 	return (((long long) t.tv_sec) * NSEC_PER_SEC) + t.tv_nsec;
 }
