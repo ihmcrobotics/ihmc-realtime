@@ -17,16 +17,28 @@
  */
 package us.ihmc.concurrent;
 
-import static org.junit.Assert.assertTrue;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.junit.Test;
 
 public class ConcurrentRingBufferTest
 {
+   
+   private int m_z = 9821271;
+   private int m_w = 18917240;
+   int get_random()
+   {
+       m_z = 36969 * (m_z & 65535) + (m_z >> 16);
+       m_w = 18000 * (m_w & 65535) + (m_w >> 16);
+       return (m_z << 16) + m_w;  /* 32-bit result */
+   }
+   
    @Test
-   public void test()
+   public void test() throws IOException
    {
       final long iterations = 100000000L;
       final long writesPerIteration = 1L;
@@ -46,7 +58,7 @@ public class ConcurrentRingBufferTest
                {
                   MutableLong nextValue;
                   while((nextValue = concurrentRingBuffer.next()) == null);  // Spinlock
-                  nextValue.value = random.nextLong();
+                  nextValue.value = get_random();
                }
                concurrentRingBuffer.commit();
             }
@@ -59,6 +71,12 @@ public class ConcurrentRingBufferTest
       boolean running = true; 
       long iteration = 0;
       Random random = new Random(seed);
+      
+      
+      int n = 5000;
+      long[][] dat = new long[2][(int) ((iterations * writesPerIteration)/n)];
+      
+      long start = System.nanoTime();
       while(running)
       {
          if(concurrentRingBuffer.poll())
@@ -66,9 +84,17 @@ public class ConcurrentRingBufferTest
             MutableLong value;
             while((value = concurrentRingBuffer.read()) != null)
             {
-               assertTrue(random.nextLong() == value.value);
+//               assertTrue(random.nextLong() == value.value);
+               if(iteration % n == 0)
+               {
+                  int i = (int) (iteration / n);
+                  dat[0][i] = System.nanoTime() - start;
+                  dat[1][i] = value.value;
+               }
                
                ++iteration;
+               
+               
                if(iteration >= (iterations-1) * writesPerIteration)
                {
                   running = false;
@@ -78,6 +104,9 @@ public class ConcurrentRingBufferTest
             concurrentRingBuffer.flush();
          }
       }
+
+      String data = "x=" + Arrays.toString(dat[0]) + ";\ny=" + Arrays.toString(dat[1]) + ";\nxi=x/1e9;\nyi=y./xi; plot(xi,yi)";
+      Files.write(Paths.get("data.m"), data.getBytes());
    }
 
    private class MutableLong
