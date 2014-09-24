@@ -59,6 +59,11 @@ public class RealtimeThread implements Runnable, ThreadInterface
       this(priorityParameters, null, runnable);
    }
    
+   public RealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters)
+   {
+      this(priorityParameters, periodicParameters, null);
+   }
+   
    public RealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters, Runnable runnable)
    {
       boolean periodic = false;
