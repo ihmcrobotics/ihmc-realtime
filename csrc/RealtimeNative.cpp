@@ -228,6 +228,7 @@ long waitForAbsoluteTime(timespec* ts)
 	timespec relativeTime;
 	relativeTime.tv_sec = 0;
 	relativeTime.tv_nsec = delta;
+	tsnorm(&relativeTime);
 
 	while(nanosleep(&relativeTime, NULL) == EINTR);
 
