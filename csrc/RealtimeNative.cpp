@@ -225,7 +225,12 @@ long waitForAbsoluteTime(timespec* ts)
 	}
 
 	#ifdef __MACH__
-	while(nanosleep(ts, NULL) == EINTR);
+	timespec relativeTime;
+	relativeTime.tv_sec = 0;
+	relativeTime.tv_nsec = delta;
+
+	while(nanosleep(&relativeTime, NULL) == EINTR);
+
 	#else
 	while(clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, ts, NULL) == EINTR);
         #endif
