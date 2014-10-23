@@ -17,11 +17,13 @@
  */
 package us.ihmc.realtime;
 
+import us.ihmc.util.NativeLibraryLoader;
+
 public class RealtimeNative
 {
    static
    {
-      System.loadLibrary("RealtimeNative");
+      NativeLibraryLoader.loadLibrary();
       mlockall();
       registerVM();
    }
