@@ -37,7 +37,7 @@ public class ConcurrentRingBufferTest
        return (m_z << 16) + m_w;  /* 32-bit result */
    }
    
-   @Test
+   @Test(timeout=300000)
    public void test() throws IOException
    {
       final long iterations = 100000000L;

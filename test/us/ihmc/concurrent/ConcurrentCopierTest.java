@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class ConcurrentCopierTest
 {
-   @Test
+   @Test(timeout=300000)
    public void singleThreadTest()
    {
       final long iterations = 10L;
@@ -51,7 +51,7 @@ public class ConcurrentCopierTest
       }
    }
    
-   @Test
+   @Test(timeout=300000)
    public void test()
    {
       final long iterations = 1000000L;
