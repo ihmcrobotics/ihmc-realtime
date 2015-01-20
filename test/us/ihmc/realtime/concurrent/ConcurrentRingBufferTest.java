@@ -15,7 +15,7 @@
  *    
  *    Written by Alex Lesman with assistance from IHMC team members
  */
-package us.ihmc.concurrent;
+package us.ihmc.realtime.concurrent;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,6 +24,9 @@ import java.util.Arrays;
 import java.util.Random;
 
 import org.junit.Test;
+
+import us.ihmc.concurrent.Builder;
+import us.ihmc.concurrent.ConcurrentRingBuffer;
 
 public class ConcurrentRingBufferTest
 {

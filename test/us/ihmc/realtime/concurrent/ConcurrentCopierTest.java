@@ -15,13 +15,16 @@
  *    
  *    Written by Alex Lesman with assistance from IHMC team members
  */
-package us.ihmc.concurrent;
+package us.ihmc.realtime.concurrent;
 
 import static org.junit.Assert.*;
 
 import java.util.Random;
 
 import org.junit.Test;
+
+import us.ihmc.concurrent.Builder;
+import us.ihmc.concurrent.ConcurrentCopier;
 
 public class ConcurrentCopierTest
 {
