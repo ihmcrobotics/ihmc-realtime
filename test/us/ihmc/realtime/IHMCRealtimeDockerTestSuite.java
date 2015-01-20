@@ -1,9 +1,7 @@
 package us.ihmc.realtime;
 
-import org.junit.runner.*;
-import org.junit.runners.*;
-
-import us.ihmc.utilities.test.JUnitTestSuiteConstructor;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses
@@ -19,6 +17,5 @@ public class IHMCRealtimeDockerTestSuite
 {
    public static void main(String[] args)
    {
-      JUnitTestSuiteConstructor.generateTestSuite(IHMCRealtimeDockerTestSuite.class);
    }
 }
