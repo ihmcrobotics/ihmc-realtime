@@ -46,7 +46,7 @@ public class NativeLibraryLoader
       }
 
       // Try to load the library directly. If not possible, fall trough and unpack to temp directory
-      if (libraryURL.getProtocol() == "file")
+      if ("file".equals(libraryURL.getProtocol()))
       {
          try
          {
