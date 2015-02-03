@@ -13,11 +13,11 @@ import org.junit.runners.Suite;
    us.ihmc.realtime.concurrent.ConcurrentRingBufferTest.class
 })
 
-public class IHMCRealtimeADockerTestSuite
+public class IHMCRealtimeATestSuite
 {
    public static void main(String[] args)
    {
-      //new JUnitTestSuiteRunner(IHMCRealtimeADockerTestSuite.class);
+      //new JUnitTestSuiteRunner(IHMCRealtimeATestSuite.class);
    }
 }
 
