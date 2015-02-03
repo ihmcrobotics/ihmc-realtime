@@ -8,6 +8,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses
 ({
+   us.ihmc.realtime.concurrent.ConcurrentCopierTest.class,
+   us.ihmc.realtime.concurrent.ConcurrentRingBufferTest.class
 })
 
 public class IHMCRealtimeDockerTestSuite
