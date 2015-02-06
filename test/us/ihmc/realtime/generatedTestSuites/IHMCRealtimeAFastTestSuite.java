@@ -17,7 +17,7 @@ public class IHMCRealtimeAFastTestSuite
 {
    public static void main(String[] args)
    {
-      //new JUnitTestSuiteRunner(IHMCRealtimeAFastTestSuite.class);
+//      new JUnitTestSuiteRunner(IHMCRealtimeAFastTestSuite.class);
    }
 }
 
