@@ -24,10 +24,16 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Class to copy data from one producer thread to one consumer thread guaranteeing atomicity.
  * This class is lock-free, non-blocking and garbage-free
  *   
- *   Only one producer and one consumer are supported
+ *   Only one producer and one consumer are supported. 
+ *   
+ *   This class is difficult to read due to the necessity to make things atomic.
+ *   There are 3 objects in the buffer. One will be the one to be read, one will
+ *   be the one to be written and one will be the one to be committed. The state 
+ *   variable encodes which of the objects is which. The high two bits encode
+ *   which object to read. The low two bits encode which object to write.
  *   
  * 
- * @author Jesper Smith
+ * @author Alex Lesman, Jesper Smith
  * 
  * @param <T> object
  *
