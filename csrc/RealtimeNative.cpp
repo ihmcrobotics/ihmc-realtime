@@ -155,14 +155,12 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_createThread(JNIEnv
 		tsnorm(&thread->period);
 	}
 
-
-	// Get reference to thread function
+	// Get reference to thread's run method wrapper
 	thread->javaThread = env->NewGlobalRef(target);
 	jclass targetClass = env->GetObjectClass(target);
-
 	JNIassert(env, targetClass != NULL);
-	thread->methodID = env->GetMethodID(targetClass, "runThread", "()V");
 
+	thread->methodID = env->GetMethodID(targetClass, "runFromNative", "()V");
 	JNIassert(env, thread->methodID != NULL);
 
 	return (long long)thread;

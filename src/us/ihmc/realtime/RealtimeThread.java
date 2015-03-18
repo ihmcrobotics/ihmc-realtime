@@ -121,10 +121,13 @@ public class RealtimeThread implements Runnable, ThreadInterface
    }
 
    /**
-    * This seems to be called from the JNI
-    * /home/igor/Workspace/IHMCRealtime/csrc/RealtimeNative.cpp:164
+    * Instead of calling start() on the Java object, this method is
+    * intended to be called from the JNI by a native POSIX thread.
+    *
+    * Don't forgen to change the native library if modified.
+    * IHMCRealtime/csrc/RealtimeNative.cpp:164
     */
-   void runThread()
+   void runFromNative()
    {
       realtimeThreads.set(this);
       run();
