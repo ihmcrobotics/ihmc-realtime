@@ -120,6 +120,16 @@ public class RealtimeThread implements Runnable, ThreadInterface
       threadStatus = ThreadStatus.STARTED;
    }
 
+   /**
+    * This seems to be called from the JNI
+    * /home/igor/Workspace/IHMCRealtime/csrc/RealtimeNative.cpp:164
+    */
+   void runThread()
+   {
+      realtimeThreads.set(this);
+      run();
+   }
+
    @Override
    public void run()
    {
