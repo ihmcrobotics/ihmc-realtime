@@ -12,16 +12,26 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
+ *    Written by Igor Kalkov with assistance from IHMC team members
  */
 package us.ihmc.realtime;
 
 public class RealtimeMemory
 {
    /**
-    * Does call mlockall() in order to avoid page faults.
+    * Locks all pages mapped into the address space of the calling process using mlockall().
     */
    public static void lock()
    {
       RealtimeNative.mlockall();
+   }
+
+   /**
+    * Unlocks all pages mapped into the address space of the calling process using munlockall().
+    */
+   public static void unlock()
+   {
+      throw new RuntimeException("Unlocking memory is not implemented yet!");
    }
 }

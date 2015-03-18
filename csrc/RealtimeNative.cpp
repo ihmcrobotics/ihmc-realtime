@@ -72,7 +72,6 @@ void* run(void* threadPtr)
 	return NULL;
 }
 
-
 /**
  * Call mlockall to avoid paging memory
  */
@@ -87,7 +86,6 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_mlockall(JNIEnv* env
 	capget(&cap_header_data, &cap_data);
 	if((cap_data.effective & CAP_IPC_LOCK) != CAP_IPC_LOCK)
 	{
-//		throwRuntimeException(env, "Cannot lock memory, expect page faults. Run as root");
 		std::cerr << "Cannot lock memory, expect page faults. Run as root" << std::endl;
 	}
 	else
