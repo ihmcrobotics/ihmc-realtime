@@ -24,12 +24,17 @@ public class RealtimeNative
    static
    {
       NativeLibraryLoader.loadLibrary();
-      mlockall();
       registerVM();
    }
 
-   private static native void mlockall();
    private static native void registerVM();
+
+   /**
+    * The memory should be locked explicitly and not through
+    * a static initializer. Otherwise its difficult to predict
+    * when exactly and from which context this happens.
+    */
+   static native void mlockall();
    
    static native long createThread(Runnable target, int priority, boolean periodic, boolean startOnClock, long startSeconds, long startNanos, long periodSeconds, long periodNanos);
    static native int startThread(long threadID);
@@ -57,13 +62,7 @@ public class RealtimeNative
     * @return monotonic time in nanoseconds
     */
    static native long getCurrentTimeNative();
-   
+
    static native int getCurrentThreadPriority();
    static native int getCurrentThreadScheduler();
-   {
-      // TODO Auto-generated method stub
-      
-   }
-
-
 }

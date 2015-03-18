@@ -21,7 +21,6 @@ import us.ihmc.affinity.Affinity;
 import us.ihmc.affinity.Processor;
 import us.ihmc.util.ThreadInterface;
 
-
 public class RealtimeThread implements Runnable, ThreadInterface
 {
    enum SchedulerAlgorithm
@@ -47,7 +46,6 @@ public class RealtimeThread implements Runnable, ThreadInterface
    protected final Runnable runnable;
    
    private Processor[] affinity = null;
-
    
    public RealtimeThread(PriorityParameters priorityParameters)
    {
@@ -57,11 +55,6 @@ public class RealtimeThread implements Runnable, ThreadInterface
    public RealtimeThread(PriorityParameters priorityParameters, Runnable runnable)
    {
       this(priorityParameters, null, runnable);
-   }
-   
-   public RealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters)
-   {
-      this(priorityParameters, periodicParameters, null);
    }
    
    public RealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters, Runnable runnable)
@@ -121,12 +114,6 @@ public class RealtimeThread implements Runnable, ThreadInterface
       
       threadStatus = ThreadStatus.STARTED;
    }
-   
-   void runThread()
-   {
-      realtimeThreads.set(this);
-      run();
-   }
 
    @Override
    public void run()
@@ -141,17 +128,14 @@ public class RealtimeThread implements Runnable, ThreadInterface
    {
       return threadStatus;
    }
-
    
    /**
-    * 
     * @return time waiting
     */
    public long waitForNextPeriod()
    {
       return RealtimeNative.waitForNextPeriod(threadID);
    }
-   
    
    public void setNextPeriodToClock()
    {

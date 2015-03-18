@@ -23,8 +23,6 @@ public class PriorityParameters
    private static int maximumPriority = RealtimeNative.getMaximumPriorityNative();
    private static int minimumPriority = RealtimeNative.getMinimumPriorityNative();
    
-   public static final PriorityParameters MAX_PRIORITY = new PriorityParameters(maximumPriority);
-   
    private final int priority;
    
    public PriorityParameters(int priority)
@@ -41,7 +39,6 @@ public class PriorityParameters
    {
       return this.priority;
    }
-   
    
    public static int getMaximumPriority()
    {

@@ -12,35 +12,16 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    Written by Jesper Smith with assistance from IHMC team members
  */
 package us.ihmc.realtime;
 
-public class PeriodicParameters
+public class RealtimeMemory
 {
-   private final MonotonicTime startTime;
-   private final MonotonicTime period;
-
-   public PeriodicParameters(MonotonicTime period)
+   /**
+    * Does call mlockall() in order to avoid page faults.
+    */
+   public static void lock()
    {
-      this.startTime = null;
-      this.period = period;
-   }
-   
-   public PeriodicParameters(MonotonicTime startTime, MonotonicTime period)
-   {
-      this.startTime = startTime;
-      this.period = period;
-   }
-
-   public MonotonicTime getStartTime()
-   {
-      return startTime;
-   }
-   
-   public MonotonicTime getPeriod()
-   {
-      return period;
+      RealtimeNative.mlockall();
    }
 }

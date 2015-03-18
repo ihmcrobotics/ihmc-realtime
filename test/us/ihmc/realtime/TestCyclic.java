@@ -17,18 +17,15 @@
  */
 package us.ihmc.realtime;
 
-
 public class TestCyclic
 {
    public static void main(String[] args) throws InterruptedException
    {
       final int periodInNS = 1000000;
       final int iterations = 10000;
-      
+
       PriorityParameters priorityParameters = new PriorityParameters(99);
       PeriodicParameters periodicParameters = new PeriodicParameters(new MonotonicTime(0, periodInNS));
-      
-      
       
       RealtimeThread periodicRealtimeThread = new RealtimeThread(priorityParameters, periodicParameters, null)
       {
@@ -61,13 +58,12 @@ public class TestCyclic
             
             System.out.println("Average jitter: " + (((double) averageJitter)/((double)iterations))/1e6 + "ms");
             System.out.println("Max jitter: " + ((double)maxJitter)/(1e6) + "ms");
-            
          }
       };
+
+      RealtimeMemory.lock();
       periodicRealtimeThread.start();
-      
+
       Thread.sleep(1000);
    }
-
-
 }
