@@ -19,9 +19,12 @@ package us.ihmc.util;
 
 public class RealtimeTools
 {
-   public static final int nextPowerOfTwo(int v)
+   /**
+    * Algorithm from http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+    * Designed for unsigned integers, this algorithm will work for signed values < 1073741825.
+    */
+   public static int nextPowerOfTwo(int v)
    {
-      // Algorithm from http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
       v--;
       v |= v >> 1;
       v |= v >> 2;
@@ -31,14 +34,13 @@ public class RealtimeTools
       return ++v;
    }
 
-   public static final int nextDivisibleByEight(int v)
+   public static int nextDivisibleByEight(int v)
    {
       return (v / 8 + 1) * 8;
    }
 
-   public static final int nextDivisibleBySixteen(int v)
+   public static int nextDivisibleBySixteen(int v)
    {
       return (v / 16 + 1) * 16;
    }
-
 }
