@@ -48,18 +48,8 @@ public class MonotonicTime
    
    private void normalize()
    {      
-      while(nanoseconds >= NANOSECONDS_PER_SECOND)
-      {
-         nanoseconds -= NANOSECONDS_PER_SECOND;
-         seconds++;
-      }
-      
-      while(nanoseconds < 0)
-      {
-         nanoseconds += NANOSECONDS_PER_SECOND;
-         seconds--;
-      }
-      
+      seconds += nanoseconds / NANOSECONDS_PER_SECOND;
+      nanoseconds = nanoseconds % NANOSECONDS_PER_SECOND;
    }
    
    public void add(MonotonicTime time)
