@@ -22,13 +22,10 @@ public class NativeLibraryLoader
    
    private static boolean loaded = false;
    
-   
-
    private NativeLibraryLoader()
    {
       // Disallow construction
    }
-
    
    public static synchronized void loadLibrary()
    {
@@ -36,6 +33,7 @@ public class NativeLibraryLoader
       {
          return;
       }
+
       String prefix = createPackagePrefix(PACKAGE_NAME);
       String library = System.mapLibraryName(LIBRARY_NAME);
       URL libraryURL = NativeLibraryLoader.class.getClassLoader().getResource(prefix + library);
@@ -113,7 +111,6 @@ public class NativeLibraryLoader
          }
 
          out.close();
-
       }
       catch (IOException e)
       {

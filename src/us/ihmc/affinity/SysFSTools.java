@@ -43,9 +43,8 @@ public class SysFSTools
          }
          else
          {
-            
-            int start = Integer.valueOf(rangeList[0]);
-            int end = Integer.valueOf(rangeList[1]);
+            int start = Integer.parseInt(rangeList[0]);
+            int end = Integer.parseInt(rangeList[1]);
             
             int[] subElement = new int[end - start + 1];
             for (int i = 0; i <= (end - start); i++)
