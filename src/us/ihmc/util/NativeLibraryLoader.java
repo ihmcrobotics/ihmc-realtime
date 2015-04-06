@@ -32,7 +32,7 @@ public class NativeLibraryLoader
    
    public static synchronized void loadLibrary()
    {
-      if(loaded)
+      if (loaded)
       {
          return;
       }
@@ -66,11 +66,13 @@ public class NativeLibraryLoader
       File directory = new File(LIBRARY_LOCATION + "/" + prefix);
       if (!directory.exists())
       {
-         directory.mkdirs();
+         boolean res = directory.mkdirs();
+         if (!res) { throw new UnsatisfiedLinkError("Cannot create directory: " + directory.getAbsolutePath()); }
       }
+
       File lib = new File(directory, library);
       InputStream stream = NativeLibraryLoader.class.getClassLoader().getResourceAsStream(prefix + library);
-      if(stream == null)
+      if (stream == null)
       {
          throw new UnsatisfiedLinkError("Cannot load library " + prefix + library);
       }
@@ -83,9 +85,9 @@ public class NativeLibraryLoader
       catch (IOException e)
       {
       }
+
       System.load(lib.getAbsolutePath());
       loaded = true;
-      return;
    }
 
    private static String createPackagePrefix(String packageName)
@@ -117,7 +119,5 @@ public class NativeLibraryLoader
       {
          throw new RuntimeException(e);
       }
-
    }
-
 }

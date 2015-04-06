@@ -22,7 +22,7 @@ public class ConcurrentRingBufferBenchmark
 {
    public static void main(String[] args)
    {
-      final long iterations = Long.valueOf(args[0]);
+      final long iterations = Long.parseLong(args[0]);
       final long writesPerIteration = 1L;
       
       final ConcurrentRingBuffer<MutableLong> concurrentRingBuffer = new ConcurrentRingBuffer<MutableLong>(new MutableLongBuilder(), 1024);
@@ -46,11 +46,10 @@ public class ConcurrentRingBufferBenchmark
          }
       }).start();
       
-      
-     
-      boolean running = true; 
+      boolean running = true;
       long iteration = 0;
       long start = System.nanoTime();
+
       while(running)
       {
          if(concurrentRingBuffer.poll())
@@ -73,6 +72,7 @@ public class ConcurrentRingBufferBenchmark
             concurrentRingBuffer.flush();
          }
       }
+
       long executionTime = System.nanoTime() - start;
       double executionTimeS = executionTime / 1000000000.0;
       double average = iterations / executionTimeS;
@@ -84,17 +84,13 @@ public class ConcurrentRingBufferBenchmark
    private static class MutableLong
    {
       public long value;
-
    }
 
    private static class MutableLongBuilder implements Builder<MutableLong>
    {
-      
       public MutableLong newInstance()
       {
          return new MutableLong();
       }
    }
-
-
 }

@@ -47,7 +47,8 @@ public class CPUTopology
    {
       try
       {
-         return SysFSTools.range(SysFSTools.readFirstLine("/sys/devices/system/cpu/online"));
+         String range = SysFSTools.readFirstLine("/sys/devices/system/cpu/online");
+         return SysFSTools.range(range);
       }
       catch (NumberFormatException | IOException e)
       {
@@ -59,13 +60,13 @@ public class CPUTopology
    {
       try
       {
-         return Integer.valueOf(SysFSTools.readFirstLine("/sys/devices/system/cpu/cpu" + cpu + "/topology/physical_package_id"));
+         String id = SysFSTools.readFirstLine("/sys/devices/system/cpu/cpu" + cpu + "/topology/physical_package_id");
+         return Integer.parseInt(id);
       }
       catch (NumberFormatException | IOException e)
       {
          return -1;
       }
-
    }
    
    public Package getPackage(int packageID)

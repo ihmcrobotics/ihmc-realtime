@@ -35,9 +35,10 @@ public class SysFSTools
       {
          String[] rangeList = subRange.split("-");
          
-         if(rangeList.length == 1)
+         if (rangeList.length == 1)
          {
-            result.add(new int[] { Integer.valueOf(subRange) });
+            int[] item = new int[] { Integer.parseInt(subRange) };
+            result.add(item);
             size++;
          }
          else
@@ -54,7 +55,6 @@ public class SysFSTools
             }
             result.add(subElement);
          }
-         
       }
       
       int[] intResult = new int[size];
@@ -74,6 +74,4 @@ public class SysFSTools
    {
       return Files.readAllLines(Paths.get(path), Charset.forName("US-ASCII")).get(0);
    }
-
-
 }
