@@ -8,7 +8,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses
 ({
    us.ihmc.realtime.concurrent.ConcurrentCopierTest.class,
-   us.ihmc.realtime.concurrent.ConcurrentRingBufferTest.class
+   us.ihmc.realtime.concurrent.ConcurrentRingBufferTest.class,
+   us.ihmc.realtime.MonotonicTimeTest.class
 })
 
 public class IHMCRealtimeAFastTestSuite
