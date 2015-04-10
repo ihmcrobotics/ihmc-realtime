@@ -19,7 +19,8 @@ package us.ihmc.realtime;
 
 public class PeriodicRealtimeThread extends RealtimeThread
 {
-
+   private volatile boolean running = true;
+   
    public PeriodicRealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters, Runnable runnable)
    {
       super(priorityParameters, periodicParameters, runnable);
@@ -29,15 +30,20 @@ public class PeriodicRealtimeThread extends RealtimeThread
    @Override
    public final void run()
    {
-      while(true)
+      while(running)
       {
          super.waitForNextPeriod();
          
-         if(runnable != null)
+         if(running && runnable != null)
          {
             runnable.run();
          }
       }
+   }
+   
+   public void shutdown()
+   {
+      running = false;
    }
 
 }
