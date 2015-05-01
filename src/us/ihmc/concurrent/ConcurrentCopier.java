@@ -129,7 +129,7 @@ public class ConcurrentCopier<T>
    
    
    /**
-    * Commit write such that getCopyForWriting returns the newest copy
+    * Commit write such that getCopyForReading returns the newest copy
     */
    public void commit()
    {
