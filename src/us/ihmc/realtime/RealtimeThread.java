@@ -17,9 +17,9 @@
  */
 package us.ihmc.realtime;
 
-import us.ihmc.affinity.Affinity;
-import us.ihmc.affinity.Processor;
-import us.ihmc.util.ThreadInterface;
+import us.ihmc.realtime.affinity.Affinity;
+import us.ihmc.realtime.affinity.Processor;
+import us.ihmc.realtime.util.ThreadInterface;
 
 public class RealtimeThread implements Runnable, ThreadInterface
 {

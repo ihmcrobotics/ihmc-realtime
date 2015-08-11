@@ -15,7 +15,7 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.affinity;
+package us.ihmc.realtime.affinity;
 
 import java.util.ArrayList;
 

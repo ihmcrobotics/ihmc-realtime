@@ -15,32 +15,44 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.util;
+package us.ihmc.realtime.util;
 
-public class RealtimeTools
+import java.util.concurrent.atomic.AtomicLong;
+
+
+/**
+ * Padding atomic long class
+ * 
+ * @see http://mechanical-sympathy.blogspot.com/2011/07/false-sharing.html
+ * @see http://mechanical-sympathy.blogspot.com/2011/08/false-sharing-java-7.html
+ *  
+ *  
+ * @author Jesper Smith
+ *
+ */
+@SuppressWarnings("serial")
+public class PaddedAtomicLong extends AtomicLong 
 {
+   public volatile long p1, p2, p3, p4, p5, p6, p7 = 8L;
+   
+   public PaddedAtomicLong()
+   {
+      super();
+   }
+   
+   public PaddedAtomicLong(long initialValue)
+   {
+      super(initialValue);
+   }
+   
    /**
-    * Algorithm from http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-    * Designed for unsigned integers, this algorithm will work for signed values < 1073741825.
+    * Public function to avoid removal of padding
+    * 
+    * @return sum of p
+    * 
     */
-   public static int nextPowerOfTwo(int v)
+   public long avoidPaddingRemoval()
    {
-      v--;
-      v |= v >> 1;
-      v |= v >> 2;
-      v |= v >> 4;
-      v |= v >> 8;
-      v |= v >> 16;
-      return ++v;
-   }
-
-   public static int nextDivisibleByEight(int v)
-   {
-      return (v / 8 + 1) * 8;
-   }
-
-   public static int nextDivisibleBySixteen(int v)
-   {
-      return (v / 16 + 1) * 16;
+      return p1 + p2 + p3 + p4 + p5 + p6 + p7;
    }
 }

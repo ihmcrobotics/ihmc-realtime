@@ -17,8 +17,8 @@
  */
 package us.ihmc.realtime;
 
-import us.ihmc.affinity.CPUTopology;
-import us.ihmc.affinity.Processor;
+import us.ihmc.realtime.affinity.CPUTopology;
+import us.ihmc.realtime.affinity.Processor;
 
 public class TestCyclic
 {

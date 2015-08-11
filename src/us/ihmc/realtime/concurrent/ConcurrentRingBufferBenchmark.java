@@ -15,7 +15,7 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.concurrent;
+package us.ihmc.realtime.concurrent;
 
 
 public class ConcurrentRingBufferBenchmark

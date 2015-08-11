@@ -15,12 +15,12 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.util;
+package us.ihmc.realtime.util;
 
-import us.ihmc.affinity.Processor;
 import us.ihmc.realtime.PeriodicParameters;
 import us.ihmc.realtime.PriorityParameters;
 import us.ihmc.realtime.RealtimeThread;
+import us.ihmc.realtime.affinity.Processor;
 
 public class RealtimeThreadFactory implements ThreadFactory
 {

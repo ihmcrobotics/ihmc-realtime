@@ -15,9 +15,9 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.concurrent.dataStructures;
+package us.ihmc.realtime.concurrent.dataStructures;
 
-import us.ihmc.util.RealtimeTools;
+import us.ihmc.realtime.util.RealtimeTools;
 
 public class ChangeListenerLongBuffer
 {
@@ -62,7 +62,7 @@ public class ChangeListenerLongBuffer
       return values[index];
    }
    
-   public static class Builder implements us.ihmc.concurrent.Builder<ChangeListenerLongBuffer>
+   public static class Builder implements us.ihmc.realtime.concurrent.Builder<ChangeListenerLongBuffer>
    {
       private final int capacity;
       

@@ -17,7 +17,7 @@
  */
 package us.ihmc.realtime;
 
-import us.ihmc.util.NativeLibraryLoader;
+import us.ihmc.realtime.util.NativeLibraryLoader;
 
 public class RealtimeNative
 {

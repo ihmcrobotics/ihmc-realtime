@@ -15,15 +15,9 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.concurrent;
+package us.ihmc.realtime.util;
 
-/**
- * 
- * @author Jesper Smith
- *
- * @param <T> Type of object to build
- */
-public interface Builder<T>
-{ 
-   public T newInstance();
+public interface ThreadFactory
+{
+   public ThreadInterface createThread(Runnable runnable, String name);
 }
