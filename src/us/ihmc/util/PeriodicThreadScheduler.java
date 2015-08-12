@@ -1,4 +1,4 @@
-package us.ihmc.realtime.util;
+package us.ihmc.util;
 
 import java.util.concurrent.TimeUnit;
 

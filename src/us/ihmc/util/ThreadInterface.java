@@ -15,30 +15,14 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.realtime.affinity;
+package us.ihmc.util;
 
-public class Processor
+import us.ihmc.realtime.MonotonicTime;
+
+public interface ThreadInterface
 {
-   private final int id;
-
-   public Processor(int cpuID)
-   {
-      this.id = cpuID;
-   }
+   public void start();
+   public void run();
    
-   @Override
-   public String toString()
-   {
-      StringBuilder builder = new StringBuilder();
-      builder.append("\t\t\tProcessor: ");
-      builder.append(id);
-      builder.append("\n");
-      return builder.toString();
-   }
-
-   public int getId()
-   {
-      return id;
-   }
-
+   public void getNextTriggerTime(MonotonicTime nextTriggerTime);
 }

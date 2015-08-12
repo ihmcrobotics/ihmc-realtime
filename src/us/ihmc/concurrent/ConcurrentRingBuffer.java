@@ -15,10 +15,10 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.realtime.concurrent;
+package us.ihmc.concurrent;
 
-import us.ihmc.realtime.util.PaddedAtomicLong;
-import us.ihmc.realtime.util.RealtimeTools;
+import us.ihmc.util.PaddedAtomicLong;
+import us.ihmc.util.RealtimeTools;
 
 /**
  * Concurrent lock-free and garbage-free implementation of a cyclic buffer

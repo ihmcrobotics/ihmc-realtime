@@ -15,14 +15,9 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.realtime.util;
+package us.ihmc.util;
 
-import us.ihmc.realtime.MonotonicTime;
-
-public interface ThreadInterface
+public interface ThreadFactory
 {
-   public void start();
-   public void run();
-   
-   public void getNextTriggerTime(MonotonicTime nextTriggerTime);
+   public ThreadInterface createThread(Runnable runnable, String name);
 }

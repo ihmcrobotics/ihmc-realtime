@@ -15,7 +15,7 @@
  *    
  *    Written by Alex Lesman with assistance from IHMC team members
  */
-package us.ihmc.realtime.concurrent;
+package us.ihmc.concurrent;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

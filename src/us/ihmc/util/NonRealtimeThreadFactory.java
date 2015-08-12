@@ -15,7 +15,7 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.realtime.util;
+package us.ihmc.util;
 
 import us.ihmc.realtime.NonRealtimeThread;
 

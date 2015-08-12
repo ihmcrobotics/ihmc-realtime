@@ -17,7 +17,7 @@
  */
 package us.ihmc.realtime;
 
-import us.ihmc.realtime.util.ThreadInterface;
+import us.ihmc.util.ThreadInterface;
 
 public class NonRealtimeThread extends Thread implements ThreadInterface
 {

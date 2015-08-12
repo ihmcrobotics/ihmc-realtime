@@ -15,7 +15,7 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.realtime.affinity;
+package us.ihmc.affinity;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

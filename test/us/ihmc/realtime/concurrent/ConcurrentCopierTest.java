@@ -23,8 +23,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import us.ihmc.realtime.concurrent.Builder;
-import us.ihmc.realtime.concurrent.ConcurrentCopier;
+import us.ihmc.concurrent.Builder;
+import us.ihmc.concurrent.ConcurrentCopier;
 
 public class ConcurrentCopierTest
 {

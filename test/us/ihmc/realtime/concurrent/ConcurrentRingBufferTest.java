@@ -25,8 +25,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import us.ihmc.realtime.concurrent.Builder;
-import us.ihmc.realtime.concurrent.ConcurrentRingBuffer;
+import us.ihmc.concurrent.Builder;
+import us.ihmc.concurrent.ConcurrentRingBuffer;
 
 public class ConcurrentRingBufferTest
 {

@@ -1,4 +1,4 @@
-package us.ihmc.realtime.util;
+package us.ihmc.util;
 
 import java.io.File;
 import java.io.FileOutputStream;

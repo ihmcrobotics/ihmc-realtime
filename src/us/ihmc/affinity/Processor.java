@@ -15,32 +15,30 @@
  *    
  *    Written by Jesper Smith with assistance from IHMC team members
  */
-package us.ihmc.realtime.util;
+package us.ihmc.affinity;
 
-public class RealtimeTools
+public class Processor
 {
-   /**
-    * Algorithm from http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-    * Designed for unsigned integers, this algorithm will work for signed values < 1073741825.
-    */
-   public static int nextPowerOfTwo(int v)
+   private final int id;
+
+   public Processor(int cpuID)
    {
-      v--;
-      v |= v >> 1;
-      v |= v >> 2;
-      v |= v >> 4;
-      v |= v >> 8;
-      v |= v >> 16;
-      return ++v;
+      this.id = cpuID;
+   }
+   
+   @Override
+   public String toString()
+   {
+      StringBuilder builder = new StringBuilder();
+      builder.append("\t\t\tProcessor: ");
+      builder.append(id);
+      builder.append("\n");
+      return builder.toString();
    }
 
-   public static int nextDivisibleByEight(int v)
+   public int getId()
    {
-      return (v / 8 + 1) * 8;
+      return id;
    }
 
-   public static int nextDivisibleBySixteen(int v)
-   {
-      return (v / 16 + 1) * 16;
-   }
 }
