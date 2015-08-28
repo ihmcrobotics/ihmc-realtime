@@ -67,6 +67,7 @@ publishing {
 	repositories {
 		maven {
 			credentials {	
+				println "Expecting nexus_username and nexus_password in ~/.gradle/gradle.properties"
 				username "${nexus_username}"
 				password "${nexus_password}"
 			}
