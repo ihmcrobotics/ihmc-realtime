@@ -66,10 +66,9 @@ publishing {
 
 	repositories {
 		maven {
-			credentials {	
-				println "Expecting nexus_username and nexus_password in ~/.gradle/gradle.properties"
-				username "${nexus_username}"
-				password "${nexus_password}"
+			credentials {
+				username project.hasProperty('nexus_username')?"${nexus_username}":"invalid"
+				password project.hasProperty('nexus_password')?"${nexus_password}":"invalid"
 			}
 			url "https://bengal.ihmc.us/nexus/content/repositories/releases"
 		}
