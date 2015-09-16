@@ -100,6 +100,16 @@ public class MonotonicTime
       return nanoseconds;
    }
    
+   public double asSeconds()
+   {
+      return ((double) seconds) + (((double) nanoseconds)/((double) NANOSECONDS_PER_SECOND));
+   }
+   
+   public long asNanoseconds()
+   {
+      return seconds * NANOSECONDS_PER_SECOND + nanoseconds;
+   }
+   
    @Override
    public String toString()
    {
