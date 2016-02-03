@@ -219,9 +219,14 @@ public class RealtimeThread implements Runnable, ThreadInterface
       RealtimeNative.setNextPeriod(threadID, nextControllerTrigger.seconds(), nextControllerTrigger.nanoseconds());
    }
 
-   public int join()
+   public void join()
    {
-      return RealtimeNative.join(threadID);
+      RealtimeNative.join(threadID);
+   }
+
+   public int joinWithReturn()
+   {
+     return RealtimeNative.join(threadID);
    }
 
    public long getThreadID()
