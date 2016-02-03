@@ -35,16 +35,16 @@ publishing {
 		mavenJava(MavenPublication) {
 
 			groupId 'us.ihmc'
-			artifactId 'IHMCRealtime'
+			artifactId project.name
 			version "$version"
 			from components.java
 			
 			pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
-                    name 'IHMCRealtime'
+                    name project.name
                     description 'IHMCRealtime provides a JNI-backed threading library for attaching real-time POSIX threads to a running JVM process, allowing for deterministic computation of tasks. A JNI-backed CPU Affinity library and pure Java data structures for lockless inter-thread communication'
-                    url 'https://bitbucket.org/ihmcrobotics/ihmcrealtime/'
+                    url 'https://github.com/ihmcrobotics/ihmc-realtime'
                     licenses {
                         license {
                             name 'The Apache Software License, Version 2.0'
