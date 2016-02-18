@@ -165,6 +165,11 @@ public class RealtimeThread implements Runnable, ThreadInterface
       return RealtimeNative.waitUntil(threadID, time.seconds(), time.nanoseconds());
    }
    
+   /**
+    * Get a monotonically increasing time value in nanoseconds
+    * 
+    * @return monotonically increasing time in nanoseconds since arbitrary epoch
+    */
    public static long getCurrentMonotonicClockTime()
    {
       return RealtimeNative.getCurrentTimeNative();
@@ -232,5 +237,14 @@ public class RealtimeThread implements Runnable, ThreadInterface
    public long getThreadID()
    {
       return threadID;
+   }
+   
+   /**
+    * Uses CLOCK_REALTIME to get the current time
+    * @return gets the wall time in nanoseconds since the unix epoch
+    */
+   public long getCurrentRealtimeClock()
+   {
+      return RealtimeNative.getCurrentRealtimeClockTimeNative();
    }
 }

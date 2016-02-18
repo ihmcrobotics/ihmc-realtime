@@ -369,3 +369,13 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentThreadSche
 
 	return policy;
 }
+
+
+JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentRealtimeClockTimeNative
+  (JNIEnv *env, jclass klass)
+{
+    struct timespec t;
+    JNIassert(env, clock_gettime(CLOCK_REALTIME, &t) == 0);
+
+    return (((long long) t.tv_sec) * NSEC_PER_SEC) + t.tv_nsec;
+}
