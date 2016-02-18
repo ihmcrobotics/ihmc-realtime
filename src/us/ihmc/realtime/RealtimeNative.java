@@ -65,4 +65,6 @@ public class RealtimeNative
 
    static native int getCurrentThreadPriority();
    static native int getCurrentThreadScheduler();
+   
+   static native long getCurrentRealtimeClockTimeNative();
 }

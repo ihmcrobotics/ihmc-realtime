@@ -9,18 +9,18 @@ extern "C" {
 #endif
 /*
  * Class:     us_ihmc_realtime_RealtimeNative
- * Method:    mlockall
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_mlockall
-  (JNIEnv *, jclass);
-
-/*
- * Class:     us_ihmc_realtime_RealtimeNative
  * Method:    registerVM
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_registerVM
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     us_ihmc_realtime_RealtimeNative
+ * Method:    mlockall
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_mlockall
   (JNIEnv *, jclass);
 
 /*
@@ -125,6 +125,14 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentThreadPrio
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentThreadScheduler
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     us_ihmc_realtime_RealtimeNative
+ * Method:    getCurrentRealtimeClockTimeNative
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentRealtimeClockTimeNative
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus
