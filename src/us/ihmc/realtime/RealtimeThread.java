@@ -148,11 +148,19 @@ public class RealtimeThread implements Runnable, ThreadInterface
    }
    
    /**
+    * @param offset Offset time to synchronize execution to external sources
+    * @return time waiting
+    */
+   public long waitForNextPeriod(long offset)
+   {
+      return RealtimeNative.waitForNextPeriod(threadID, offset);
+   }
+   /**
     * @return time waiting
     */
    public long waitForNextPeriod()
    {
-      return RealtimeNative.waitForNextPeriod(threadID);
+      return RealtimeNative.waitForNextPeriod(threadID, 0);
    }
    
    public void setNextPeriodToClock()

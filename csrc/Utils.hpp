@@ -226,6 +226,20 @@ static inline void tsadd(struct timespec *ts1, struct timespec *ts2)
 	tsnorm(ts1);
 }
 
+/**
+ * Add ts2 to ts1 and set ts1 to the result
+ *
+ * @param ts1
+ * @param ts2
+ * @param offset
+ */
+static inline void tsadd(struct timespec *ts1, struct timespec *ts2, long long offset)
+{
+	ts1->tv_sec += ts2->tv_sec;
+	ts1->tv_nsec += ts2->tv_nsec + offset;
+	tsnorm(ts1);
+}
+
 
 /**
  * Check if ts1 < ts2

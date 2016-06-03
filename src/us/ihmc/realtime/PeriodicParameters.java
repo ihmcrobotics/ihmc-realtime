@@ -33,6 +33,12 @@ public class PeriodicParameters
       this.startTime = startTime;
       this.period = period;
    }
+   
+   public PeriodicParameters(long periodInNanoSeconds)
+   {
+      this.startTime = null;
+      this.period = new MonotonicTime(0, periodInNanoSeconds);
+   }
 
    public MonotonicTime getStartTime()
    {

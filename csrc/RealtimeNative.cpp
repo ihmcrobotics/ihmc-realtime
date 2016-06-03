@@ -241,7 +241,7 @@ long waitForAbsoluteTime(timespec* ts)
  * @param threadPtr 64bit pointer to Thread
  */
 JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(JNIEnv* env, jclass klass,
-		jlong threadPtr)
+		jlong threadPtr, jlong offset)
 {
 	Thread* thread = (Thread*) threadPtr;
 	if(!thread->periodic)
@@ -249,7 +249,7 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(J
 		throwRuntimeException(env, "Thread is not periodic");
 	}
 
-	tsadd(&thread->nextTrigger, &thread->period);
+	tsadd(&thread->nextTrigger, &thread->period, offset);
 
 	return waitForAbsoluteTime(&thread->nextTrigger);
 }

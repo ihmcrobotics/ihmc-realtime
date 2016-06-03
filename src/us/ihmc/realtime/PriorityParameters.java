@@ -20,9 +20,13 @@ package us.ihmc.realtime;
 
 public class PriorityParameters
 {
-   private static int maximumPriority = RealtimeNative.getMaximumPriorityNative();
-   private static int minimumPriority = RealtimeNative.getMinimumPriorityNative();
    
+   private static final int maximumPriority = RealtimeNative.getMaximumPriorityNative();
+   private static final int minimumPriority = RealtimeNative.getMinimumPriorityNative();
+   
+   public static final PriorityParameters MAXIMUM_PRIORITY = new PriorityParameters(maximumPriority);
+   public static final PriorityParameters MINIMUM_PRIORITY = new PriorityParameters(minimumPriority);
+
    private final int priority;
    
    public PriorityParameters(int priority)
@@ -48,5 +52,23 @@ public class PriorityParameters
    public static int getMinimumPriority()
    {
       return minimumPriority;
+   }
+   
+   /**
+    * 
+    * Get a relative priority. Useful for cross platform code.
+    * 
+    * @param relativePriority priority between 0 and 100, where 100 is the maximum priority
+    * @return PriorityParameters
+    */
+   public static PriorityParameters getRelativePriority(int relativePriority)
+   {
+      if(relativePriority < 0 || relativePriority > 100)
+      {
+         throw new RuntimeException("The relative priority needs to be in the range from 0 to 100");
+      }
+      int priorityRange = maximumPriority - minimumPriority;
+      int absolutePriority = minimumPriority + ((priorityRange * relativePriority) / 100);
+      return new PriorityParameters(absolutePriority);
    }
 }

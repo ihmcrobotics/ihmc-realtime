@@ -53,7 +53,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
  * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     us_ihmc_realtime_RealtimeNative

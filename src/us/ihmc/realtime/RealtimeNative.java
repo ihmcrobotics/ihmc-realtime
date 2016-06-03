@@ -40,7 +40,7 @@ public class RealtimeNative
    static native int startThread(long threadID);
    static native int join(long threadID);
    
-   static native long waitForNextPeriod(long threadID);
+   static native long waitForNextPeriod(long threadID, long offset);
    static native long waitUntil(long threadID, long seconds, long nanoseconds);
 
    static native void setNextPeriodToClock(long threadID); 
