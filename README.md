@@ -28,13 +28,27 @@ We work around these two restrictions by writing low-to-zero object allocation c
 
 ## Pure Java Component
 
-### Binary/.jar
-We do not currently distribute IHMCRealtime as a binary, either from a source like the Central Repository nor directly
-ourselves.  IHMCRealtime is provided in source form as-is.
+### Binary
+IHMC Realtime can be downloaded from BinTray using Maven or gradle. Add the following to your gradle build script
+
+```
+repositories {
+	jcenter()
+	maven {
+   	   url  "http://dl.bintray.com/ihmcrobotics/maven-release"
+	}
+}
+dependencies {
+       compile group: 'us.ihmc', name: 'IHMCRealtime', version: '1.1.5'
+}
+```
 
 ### Building and dependency management
-We don't currently have build management in place; we do all of our build management in the IDE.  However, we are in the
-process of migrating to gradle.  This repository will be updated accordingly once we have finished the migration.
+IHMCRealtime uses the gradle build system. To build, simply run
+
+```
+gradle jar
+```
 
 ## Native Component
 
