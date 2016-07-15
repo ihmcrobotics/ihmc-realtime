@@ -90,6 +90,18 @@ public class MonotonicTime
       normalize();
    }
 
+   public void addNanoseconds(long nanoseconds)
+   {
+      this.nanoseconds += nanoseconds;
+      normalize();
+   }
+   
+   public void subNanoseconds(long nanoseconds)
+   {
+      this.nanoseconds -= nanoseconds;
+      normalize();
+   }
+   
    long seconds()
    {
       return seconds;

@@ -54,11 +54,7 @@ void* run(void* threadPtr)
 		return (void*)-1;
 	}
 
-	if(thread->periodic && thread->setTriggerToClock)
-	{
-	        JNIassert(env, system_monotonic_gettime(&thread->nextTrigger) == 0);
-		thread->setTriggerToClock = false;
-	}
+
 
 	env->CallVoidMethod(thread->javaThread, thread->methodID);
 
@@ -247,6 +243,12 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod(J
 	if(!thread->periodic)
 	{
 		throwRuntimeException(env, "Thread is not periodic");
+	}
+	
+	if(thread->setTriggerToClock)
+	{
+	    JNIassert(env, system_monotonic_gettime(&thread->nextTrigger) == 0);
+		thread->setTriggerToClock = false;
 	}
 
 	tsadd(&thread->nextTrigger, &thread->period, offset);
