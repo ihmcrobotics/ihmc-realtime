@@ -255,4 +255,10 @@ public class RealtimeThread implements Runnable, ThreadInterface
    {
       return RealtimeNative.getCurrentRealtimeClockTimeNative();
    }
+   
+   @Override
+   public void finalize()
+   {
+      RealtimeNative.destroy(threadID);
+   }
 }

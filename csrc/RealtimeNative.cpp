@@ -59,8 +59,6 @@ void* run(void* threadPtr)
 	env->CallVoidMethod(thread->javaThread, thread->methodID);
 
 	env->DeleteGlobalRef(thread->javaThread);
-	delete thread;
-
 	releaseEnv(globalVirtualMachine);
 
 	thread->retVal = 0;
@@ -380,4 +378,12 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentRealtimeC
     JNIassert(env, clock_gettime(CLOCK_REALTIME, &t) == 0);
 
     return (((long long) t.tv_sec) * NSEC_PER_SEC) + t.tv_nsec;
+}
+
+
+JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_destroy
+  (JNIEnv *, jclass, jlong)
+{
+	Thread* thread = (Thread*) threadPtr;
+	delete thread;
 }

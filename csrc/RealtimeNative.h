@@ -89,6 +89,14 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getNextPeriod
 
 /*
  * Class:     us_ihmc_realtime_RealtimeNative
+ * Method:    destroy
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_destroy
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     us_ihmc_realtime_RealtimeNative
  * Method:    getMaximumPriorityNative
  * Signature: ()I
  */

@@ -67,4 +67,6 @@ public class RealtimeNative
    static native int getCurrentThreadScheduler();
    
    static native long getCurrentRealtimeClockTimeNative();
+
+   static native void destroy(long threadID);
 }
