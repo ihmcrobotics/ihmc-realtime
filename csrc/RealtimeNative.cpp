@@ -382,7 +382,7 @@ JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentRealtimeC
 
 
 JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_destroy
-  (JNIEnv *, jclass, jlong)
+  (JNIEnv *, jclass, jlong threadPtr)
 {
 	Thread* thread = (Thread*) threadPtr;
 	delete thread;
