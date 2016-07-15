@@ -17,6 +17,8 @@
  */
 package us.ihmc.realtime;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import us.ihmc.affinity.Affinity;
 import us.ihmc.affinity.Processor;
 import us.ihmc.util.ThreadInterface;
@@ -46,6 +48,10 @@ public class RealtimeThread implements Runnable, ThreadInterface
    protected final Runnable runnable;
    
    private Processor[] affinity = null;
+   
+   private final ReentrantLock joinLock = new ReentrantLock();
+   private boolean hasJoined = false;
+   private int returnValue;
    
    public RealtimeThread(PriorityParameters priorityParameters)
    {
@@ -234,12 +240,25 @@ public class RealtimeThread implements Runnable, ThreadInterface
 
    public void join()
    {
-      RealtimeNative.join(threadID);
+      joinWithReturn();
    }
 
    public int joinWithReturn()
    {
-     return RealtimeNative.join(threadID);
+      // pthread_join can only be called once. Using a mutex here to allow multiple threads calling join. 
+      // The first caller will wait for the native join, the rest will block on the mutex.
+      
+      joinLock.lock();
+      {
+         if(!hasJoined)
+         {
+            returnValue = RealtimeNative.join(threadID);
+            hasJoined = true;
+         }
+      }
+      joinLock.unlock();
+      
+      return returnValue;
    }
 
    public long getThreadID()
