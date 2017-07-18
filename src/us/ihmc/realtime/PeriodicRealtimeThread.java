@@ -17,19 +17,50 @@
  */
 package us.ihmc.realtime;
 
+/**
+ * Periodic realtime thread
+ * 
+ * @author Jesper Smith
+ *
+ */
 public class PeriodicRealtimeThread extends RealtimeThread
 {
    private volatile boolean running = true;
    
+   /**
+    * Construct a new PeriodicRealtimeThread with given priority and periodic parameters.
+    * 
+    * The runnable gets called given the period in periodicParameters
+    * 
+    * @param priorityParameters
+    * @param periodicParameters
+    * @param runnable
+    */
    public PeriodicRealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters, Runnable runnable)
    {
-      super(priorityParameters, periodicParameters, runnable);
+      this(priorityParameters, periodicParameters, runnable, null);
+   }
+   
+   
+   /**
+    * Construct a new PeriodicRealtimeThread with given priority and periodic parameters.
+    * 
+    * The runnable gets called given the period in periodicParameters
+    * 
+    * @param priorityParameters
+    * @param periodicParameters
+    * @param runnable
+    * @param name Human readable name for this thread
+    */
+   public PeriodicRealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters, Runnable runnable, String name)
+   {
+      super(priorityParameters, periodicParameters, runnable, name);
    }
    
    
    @Override
    public final void run()
-   {
+   {      
       while(running)
       {
          super.waitForNextPeriod();

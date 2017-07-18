@@ -42,7 +42,7 @@ public class TestCyclic
       PriorityParameters priorityParameters = new PriorityParameters(99);
       PeriodicParameters periodicParameters = new PeriodicParameters(new MonotonicTime(0, periodInNS));
 
-      RealtimeThread periodicRealtimeThread = new RealtimeThread(priorityParameters, periodicParameters, null)
+      RealtimeThread periodicRealtimeThread = new RealtimeThread(priorityParameters, periodicParameters)
       {
          private void perform(int run)
          {

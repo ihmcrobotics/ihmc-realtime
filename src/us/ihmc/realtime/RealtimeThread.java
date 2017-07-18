@@ -17,6 +17,7 @@
  */
 package us.ihmc.realtime;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import us.ihmc.affinity.Affinity;
@@ -40,10 +41,12 @@ public class RealtimeThread implements Runnable, ThreadInterface
       STARTED
    }
    
-   private static ThreadLocal<RealtimeThread> realtimeThreads = new ThreadLocal<RealtimeThread>();
+   private static final ThreadLocal<RealtimeThread> realtimeThreads = new ThreadLocal<RealtimeThread>();
+   private static final AtomicInteger threadNumber = new AtomicInteger(1);
    
    private volatile ThreadStatus threadStatus = ThreadStatus.NEW;
    private final long threadID;
+   private final String name;
    
    protected final Runnable runnable;
    
@@ -55,20 +58,40 @@ public class RealtimeThread implements Runnable, ThreadInterface
    
    public RealtimeThread(PriorityParameters priorityParameters)
    {
-      this(priorityParameters, null, null);
+      this(priorityParameters, null, null, null);
+   }
+   
+   public RealtimeThread(PriorityParameters priorityParameters, String name)
+   {
+      this(priorityParameters, null, null, name);
    }
    
    public RealtimeThread(PriorityParameters priorityParameters, Runnable runnable)
    {
-      this(priorityParameters, null, runnable);
+      this(priorityParameters, null, runnable, null);
+   }
+
+   public RealtimeThread(PriorityParameters priorityParameters, Runnable runnable, String name)
+   {
+      this(priorityParameters, null, runnable, name);
    }
    
    public RealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters)
    {
-      this(priorityParameters, periodicParameters, null);
+      this(priorityParameters, periodicParameters, null, null);
+   }
+
+   public RealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters, String name)
+   {
+      this(priorityParameters, periodicParameters, null, name);
    }
    
    public RealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters, Runnable runnable)
+   {
+      this(priorityParameters, periodicParameters, runnable, null);
+   }
+   
+   public RealtimeThread(PriorityParameters priorityParameters, PeriodicParameters periodicParameters, Runnable runnable, String name)
    {
       boolean periodic = false;
       boolean startOnClock = false;
@@ -92,6 +115,14 @@ public class RealtimeThread implements Runnable, ThreadInterface
 
       threadID = RealtimeNative.createThread(this, priorityParameters.getPriority(), periodic, startOnClock, startSeconds, startNanos, periodSeconds, periodNanos);
       this.runnable = runnable;
+      if(name != null)
+      {
+         this.name = name + "-realtime-thread-" + threadNumber.getAndIncrement();
+      }
+      else
+      {
+         this.name = "realtime-thread-" + threadNumber.getAndIncrement();
+      }
       
    }
    
@@ -130,12 +161,13 @@ public class RealtimeThread implements Runnable, ThreadInterface
     * Instead of calling start() on the Java object, this method is
     * intended to be called from the JNI by a native POSIX thread.
     *
-    * Don't forgen to change the native library if modified.
+    * Don't forget to change the native library if modified.
     * IHMCRealtime/csrc/RealtimeNative.cpp:164
     */
    void runFromNative()
    {
       realtimeThreads.set(this);
+      Thread.currentThread().setName(name);
       run();
    }
 

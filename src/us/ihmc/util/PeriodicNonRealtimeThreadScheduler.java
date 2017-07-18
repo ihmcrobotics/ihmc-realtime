@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PeriodicNonRealtimeThreadScheduler implements PeriodicThreadScheduler
 {
    private final ScheduledExecutorService executorService;
+   private boolean running = false;
    
    public PeriodicNonRealtimeThreadScheduler(String name)
    {
@@ -18,7 +19,13 @@ public class PeriodicNonRealtimeThreadScheduler implements PeriodicThreadSchedul
    @Override
    public void schedule(Runnable runnable, long period, TimeUnit timeunit)
    {
+      if(running)
+      {
+         throw new RuntimeException("Thread has already been scheduled");
+      }
+      
       executorService.scheduleAtFixedRate(runnable, 0, period, timeunit);
+      running = true;
    }
 
    @Override
@@ -26,6 +33,8 @@ public class PeriodicNonRealtimeThreadScheduler implements PeriodicThreadSchedul
    {
       executorService.shutdown();
    }
+   
+   
    
    /**
     * Duplicated from IHMCUtilties.ThreadTools.getNamedThreadFactory. Copied to keep IHMCRealtime stand-alone.
@@ -51,6 +60,12 @@ public class PeriodicNonRealtimeThreadScheduler implements PeriodicThreadSchedul
             return t;
          }
       };
+   }
+
+   @Override
+   public void awaitTermination(long timeout, TimeUnit timeUnit) throws InterruptedException
+   {
+      executorService.awaitTermination(timeout, timeUnit);
    }
 
 }

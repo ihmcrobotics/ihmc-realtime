@@ -39,8 +39,7 @@ public class RealtimeThreadFactory implements ThreadFactory
 
    public ThreadInterface createThread(Runnable runnable, String name)
    {
-      // native thread library doesn't use names
-      RealtimeThread realtimeThread = new RealtimeThread(priorityParameters, periodicParameters, runnable);
+      RealtimeThread realtimeThread = new RealtimeThread(priorityParameters, periodicParameters, runnable, name);
       
       if(processors != null && processors.length > 0)
       {

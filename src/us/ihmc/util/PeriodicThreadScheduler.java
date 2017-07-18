@@ -20,4 +20,16 @@ public interface PeriodicThreadScheduler
     * Running threads are allowed to finish execution the current execution.
     */
    public void shutdown();
+   
+   
+   /**
+    * Await termination of this thread. This will not stop the running thread.
+    * 
+    * The timeout is optionally implemented and can be ignored by the implementation.
+    * 
+    * @param timeout
+    * @param timeUnit
+    * @throws InterruptedException
+    */
+   public void awaitTermination(long timeout, TimeUnit timeUnit) throws InterruptedException;
 }
