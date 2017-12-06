@@ -19,10 +19,16 @@ package us.ihmc.affinity;
 
 import java.util.ArrayList;
 
+import us.ihmc.realtime.RealtimeNative;
 import us.ihmc.realtime.RealtimeThread;
 
 public class Affinity
 {
+   static
+   {
+      RealtimeNative.init();
+   }
+   
    public static native void setAffinity(int... cpuID);
 
    private static native void setAffinity(long threadID, int... cpuID);

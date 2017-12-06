@@ -22,18 +22,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import us.ihmc.affinity.Affinity;
 import us.ihmc.affinity.Processor;
+import us.ihmc.process.SchedulerAlgorithm;
 import us.ihmc.util.ThreadInterface;
 
 public class RealtimeThread implements Runnable, ThreadInterface
 {
-   enum SchedulerAlgorithm
-   {
-      SCHED_OTHER,
-      SCHED_FIFO,
-      SCHED_RR,
-      SCHED_BATCH,
-      SCHED_IDLE
-   }
    
    enum ThreadStatus 
    {
@@ -224,22 +217,7 @@ public class RealtimeThread implements Runnable, ThreadInterface
    public static SchedulerAlgorithm getCurrentThreadScheduler()
    {
       int sched = RealtimeNative.getCurrentThreadScheduler();
-      
-      switch(sched)
-      {
-      case 0:
-         return SchedulerAlgorithm.SCHED_OTHER;
-      case 1:
-         return SchedulerAlgorithm.SCHED_FIFO;
-      case 2:
-         return SchedulerAlgorithm.SCHED_RR;
-      case 3:
-         return SchedulerAlgorithm.SCHED_BATCH;
-      case 5:
-         return SchedulerAlgorithm.SCHED_IDLE;
-      default:
-         throw new RuntimeException("Unknown scheduler: " + sched);
-      }
+      return SchedulerAlgorithm.fromCOrdinal(sched);
    }
    
    public static int getCurrentThreadPriority()

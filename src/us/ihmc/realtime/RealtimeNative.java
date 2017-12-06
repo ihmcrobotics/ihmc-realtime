@@ -26,6 +26,11 @@ public class RealtimeNative
       NativeLibraryLoader.loadLibrary("us.ihmc.realtime.lib", "RealtimeNative");
       registerVM();
    }
+   
+   /**
+    * This function forces the realtime native library to be loaded.
+    */
+   public static void init() {}
 
    private static native void registerVM();
 

@@ -50,7 +50,7 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_join
 /*
  * Class:     us_ihmc_realtime_RealtimeNative
  * Method:    waitForNextPeriod
- * Signature: (J)J
+ * Signature: (JJ)J
  */
 JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_waitForNextPeriod
   (JNIEnv *, jclass, jlong, jlong);
@@ -85,14 +85,6 @@ JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_setNextPeriod
  * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getNextPeriod
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     us_ihmc_realtime_RealtimeNative
- * Method:    destroy
- * Signature: (J)J
- */
-JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_destroy
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -142,6 +134,14 @@ JNIEXPORT jint JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentThreadSche
  */
 JNIEXPORT jlong JNICALL Java_us_ihmc_realtime_RealtimeNative_getCurrentRealtimeClockTimeNative
   (JNIEnv *, jclass);
+
+/*
+ * Class:     us_ihmc_realtime_RealtimeNative
+ * Method:    destroy
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_us_ihmc_realtime_RealtimeNative_destroy
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }
