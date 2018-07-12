@@ -6,7 +6,7 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.7
-version = '1.2.0'
+version = '1.2.1'
 
 project.ext.fullVersion = version
 project.ext.vcsUrl = "https://github.com/ihmcrobotics/ihmc-hierarchical-kinematics"

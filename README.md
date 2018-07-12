@@ -1,4 +1,5 @@
 #IHMCRealtime
+
 IHMCRealtime is a simple support library that provides four feature sets:
 
 1. A JNI-backed threading library for attaching real-time POSIX threads to a running JVM process, allowing for
@@ -6,6 +7,7 @@ deterministic computation of tasks
 2. A JNI-backed CPU Affinity library
 3. Pure Java data structures for lockless inter-thread communication
 4. Simple utility to retrieve Linux processes from /proc and set their scheduler and priority
+5. Setting CPU DMA Latency
 
 Pre-compiled shared objects for the native portion are provided for Ubuntu 14.04+ and Mac OS X 10.8+.  The libraries
 can be easily rebuilt using the instructions included below.
@@ -40,7 +42,7 @@ repositories {
 	}
 }
 dependencies {
-       compile group: 'us.ihmc', name: 'IHMCRealtime', version: '1.2.0'
+       compile group: 'us.ihmc', name: 'IHMCRealtime', version: '1.2.1'
 }
 ```
 

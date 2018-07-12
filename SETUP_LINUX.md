@@ -46,6 +46,14 @@ The current kernel we provide is 4.9.30 with the -rt21 RT_PREEMPT patch. To inst
 
 Note: All drivers, including keyboard, are in the linux-image-extra package. So make sure to install that.
 
+## Set the CPU DMA Latency
+
+Setting the CPU DMA Latency to 0 could significantly reduce the jitter on the realtime thread. We provide a utility us.ihmc.realtime.CPUDMALatency to do that. In your Java code call
+
+	CPUDMALatency.setLatency(0);
+	
+If you are not using IHMC Realtime write the desired latency as a 32bit integer binary to /dev/cpu\_dma\_latency.
+
 
 ## Configure kernel options in GRUB for minimal latency
 
@@ -102,4 +110,7 @@ Using IHMC Realtime you can increase the priority of an arbritrary proccess usin
 If you do not use IHMC Realtime, you could use the "chrt" command. See "man chrt".
 
 
-- Jesper Smith
+
+
+### Author
+Jesper Smith
