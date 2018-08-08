@@ -1,9 +1,0 @@
-.DS_Store
-
-
-lib/core/metadata.js
-lib/core/MetadataBlog.js
-
-website/translated_docs
-website/yarn.lock
-website/i18n/*
