@@ -2,6 +2,5 @@
 .project
 .settings
 bin
-build
 classes
 .gradle
