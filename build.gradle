@@ -103,9 +103,9 @@ ihmc.configureForIHMCOpenSourceBintrayPublish(false, "mavenJava", "maven-release
 
 remotes {
    rtComputer {
-      host = '<ip>'
-      user = '<user>'
-      password = '<pw>'
+      host = remoteHost
+      user = remoteUser
+      password = remotePass
    }
 }
 
