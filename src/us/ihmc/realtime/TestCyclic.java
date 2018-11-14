@@ -35,51 +35,55 @@ public class TestCyclic
       }
       else
       {
-         System.out.println("Iteration count: " + iterations);
          System.out.println("Estimated duration: " + duration + " seconds");
       }
 
       PriorityParameters priorityParameters = new PriorityParameters(99);
       PeriodicParameters periodicParameters = new PeriodicParameters(new MonotonicTime(0, periodInNS));
 
+      final double[] jitterValues = new double[iterations];
+
       RealtimeThread periodicRealtimeThread = new RealtimeThread(priorityParameters, periodicParameters)
       {
          private void perform(int run)
          {
-            long previousTime = 0;
-            long avgJitter = 0;
-            long maxJitter = 0;
+            super.waitForNextPeriod();
+            long previousTime = System.nanoTime();
 
-            for(int i = -1; i < iterations; i++)
+            for (int i = 0; i < iterations; i++)
             {
                super.waitForNextPeriod();
-               if(i < 0)
-               {
-                  previousTime = System.nanoTime();
-                  continue;
-               }
-
                long newTime = System.nanoTime();
-               long jitter = Math.abs(newTime - previousTime - periodInNS);
-
-               if(jitter > maxJitter) { maxJitter = jitter; }
-               avgJitter += jitter;
-
+               jitterValues[i] = Math.abs(newTime - previousTime - periodInNS) * 1.0e-3;
                previousTime = newTime;
             }
 
-            final double usAvgJitter = (double) avgJitter / (double) iterations / 1e3;
-            final double usMaxJitter = (double) maxJitter / 1e3;
+            double avg = 0.0;
+            double max = 0.0;
+            double std = 0.0;
 
-            System.out.format("[%d] Jitter: avg = %.4f us, max = %.4f us%n", run, usAvgJitter, usMaxJitter);
+            for (double value : jitterValues)
+            {
+               avg += value / iterations;
+               max = Math.max(max, value);
+            }
+            for (double value : jitterValues)
+            {
+               std += Math.pow(value - avg, 2);
+            }
+            std = Math.sqrt(std / iterations);
+
+            System.out.format("[%d] Jitter: avg = %.2f us, max = %.2f us, std = %.2f us%n", run, avg, max, std);
          }
 
          @Override
          public void run()
          {
             int run = 1;
-
-            do { perform(run++); }
+            do
+            {
+               perform(run++);
+            }
             while (endless);
          }
       };
