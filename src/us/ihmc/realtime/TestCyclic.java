@@ -58,22 +58,22 @@ public class TestCyclic
                previousTime = newTime;
             }
 
-            double avg = 0.0;
-            double max = 0.0;
-            double std = 0.0;
+            double average = 0.0;
+            double maximum = 0.0;
+            double standardDeviation = 0.0;
 
             for (double value : jitterValues)
             {
-               avg += value / iterations;
-               max = Math.max(max, value);
+               average += value / iterations;
+               maximum = Math.max(maximum, value);
             }
             for (double value : jitterValues)
             {
-               std += Math.pow(value - avg, 2);
+               standardDeviation += Math.pow(value - average, 2);
             }
-            std = Math.sqrt(std / iterations);
+            standardDeviation = Math.sqrt(standardDeviation / iterations);
 
-            System.out.format("[%d] Jitter: avg = %.2f us, max = %.2f us, std = %.2f us%n", run, avg, max, std);
+            System.out.format("[%d] Jitter: average = %.2f us, maximum = %.2f us, standard deviation = %.2f us%n", run, average, maximum, standardDeviation);
          }
 
          @Override
