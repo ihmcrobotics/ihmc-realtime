@@ -1,7 +1,9 @@
 plugins {
    id 'us.ihmc.gradle.ihmc-build' version '0.0.9'
+   id 'org.hidetake.ssh' version '2.1.1'
 }
 
+apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
@@ -98,3 +100,23 @@ publishing {
 
 def labels = ['ihmc', 'robotics', 'java', 'embedded', 'real-time']
 ihmc.configureForIHMCOpenSourceBintrayPublish(false, "mavenJava", "maven-release", labels)
+
+remotes {
+   rtComputer {
+      host = remoteHost
+      user = remoteUser
+      password = remotePass
+   }
+}
+
+mainClassName = 'us.ihmc.realtime.TestCyclic'
+task deploy(dependsOn: ['installDist']) {
+  doLast {
+    ssh.run {
+      session(remotes.rtComputer) {
+        put(from: "build/install/IHMCRealtime", into: '.')
+        execute('chmod +x ' + './IHMCRealtime/bin/IHMCRealtime')
+      }
+    }
+  }
+}
