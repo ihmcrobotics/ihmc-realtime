@@ -39,6 +39,8 @@ public class TestCyclic
          System.out.println("Estimated duration: " + duration + " seconds");
       }
 
+      CPUDMALatency.setLatency(0);
+
       PriorityParameters priorityParameters = new PriorityParameters(99);
       PeriodicParameters periodicParameters = new PeriodicParameters(new MonotonicTime(0, periodInNS));
 
