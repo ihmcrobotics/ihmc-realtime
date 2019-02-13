@@ -1,10 +1,9 @@
 package us.ihmc.realtime;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class MonotonicTimeTest
 {
@@ -50,8 +49,8 @@ public class MonotonicTimeTest
             seconds--;
          }
          
-         assertEquals(seconds, time.seconds());
-         assertEquals(nanoseconds, time.nanoseconds());
+         Assertions.assertEquals(seconds, time.seconds());
+         Assertions.assertEquals(nanoseconds, time.nanoseconds());
       }
    }
 

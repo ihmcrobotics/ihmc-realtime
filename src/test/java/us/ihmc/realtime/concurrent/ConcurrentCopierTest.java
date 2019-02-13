@@ -17,18 +17,17 @@
  */
 package us.ihmc.realtime.concurrent;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import us.ihmc.concurrent.Builder;
 import us.ihmc.concurrent.ConcurrentCopier;
 
 public class ConcurrentCopierTest
 {
-   @Test(timeout=300000)
+   @Test
    public void singleThreadTest()
    {
       final long iterations = 10L;
@@ -54,7 +53,7 @@ public class ConcurrentCopierTest
       }
    }
    
-   @Test(timeout=300000)
+   @Test
    public void test()
    {
       final long iterations = 1000000L;
@@ -116,7 +115,7 @@ public class ConcurrentCopierTest
          Random random = new Random(seed);
          for(int i = 0; i < values.length; i++)
          {
-            assertEquals(values[i], random.nextDouble(), 1e-12);
+            Assertions.assertEquals(values[i], random.nextDouble(), 1e-12);
          }
       }
 

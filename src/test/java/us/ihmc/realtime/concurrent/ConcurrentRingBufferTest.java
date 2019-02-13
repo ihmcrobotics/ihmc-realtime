@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import us.ihmc.concurrent.Builder;
 import us.ihmc.concurrent.ConcurrentRingBuffer;
@@ -40,7 +40,7 @@ public class ConcurrentRingBufferTest
        return (m_z << 16) + m_w;  /* 32-bit result */
    }
    
-   @Test(timeout=300000)
+   @Test
    public void test() throws IOException
    {
       final long iterations = 100000000L;
