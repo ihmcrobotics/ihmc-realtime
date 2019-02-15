@@ -3,7 +3,7 @@ package us.ihmc.concurrent.runtime.barrierScheduler.implicitContext.tasks;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BindingContext
+public abstract class BindingContext
 {
    private final List<UniBinding<?>> bindings = new ArrayList<>();
 
