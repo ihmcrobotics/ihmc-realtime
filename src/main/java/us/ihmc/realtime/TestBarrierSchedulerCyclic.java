@@ -238,14 +238,42 @@ public class TestBarrierSchedulerCyclic
       PriorityParameters schedulerPriority = new PriorityParameters(99);
       PeriodicParameters periodicParameters = new PeriodicParameters(SCHEDULER_PERIOD_NANOSECONDS);
 
-      PeriodicRealtimeThread schedulerThread = new PeriodicRealtimeThread(schedulerPriority, periodicParameters, barrierScheduler, "barrierSchedulerThread");
+      final TimingInformation schedulerTimingInformation = new TimingInformation(SCHEDULER_PERIOD_NANOSECONDS);
+      Runnable schedulerRunnable = new Runnable()
+      {
+         boolean firstTick = true;
+
+         @Override
+         public void run()
+         {
+            if (firstTick)
+            {
+               schedulerTimingInformation.initialize(System.nanoTime());
+               firstTick = false;
+               return;
+            }
+            else
+            {
+               schedulerTimingInformation.updateTimingInformation(System.nanoTime());
+            }
+
+            barrierScheduler.run();
+         }
+      };
+
+      PeriodicRealtimeThread schedulerThread = new PeriodicRealtimeThread(schedulerPriority, periodicParameters, schedulerRunnable, "barrierSchedulerThread");
 
       System.out.println("Pinning scheduler thread to core 1");
       schedulerThread.setAffinity(cpuPackage.getCore(1).getDefaultProcessor());
 
       Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+
          updateVariablesTask.doReporting();
          examineVariablesTask.doReporting();
+
+         System.out.format("Scheduler Jitter: avg = %.4f us, max = %.4f us%n", schedulerTimingInformation.getFinalAvgJitterMicroseconds(),
+                           schedulerTimingInformation.getFinalMaxJitterMicroseconds());
+
       }));
 
       schedulerThread.start();
