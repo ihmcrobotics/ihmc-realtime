@@ -16,7 +16,7 @@ import java.util.Random;
  */
 public class TestBarrierSchedulerCyclic
 {
-   private static final long SCHEDULER_PERIOD_NANOSECONDS = 1000000;
+   private static final long SCHEDULER_PERIOD_NANOSECONDS = 500000;
 
    public static class TestCyclicContext extends BindingContext
    {
@@ -35,9 +35,11 @@ public class TestBarrierSchedulerCyclic
       long periodInNS;
       long iterations = 0;
 
-      TimingInformation(long periodInNS)
+      TimingInformation(String name, long periodInNS)
       {
          this.periodInNS = periodInNS;
+
+         System.out.println(name + " Period, Hz: " + 1 / (periodInNS / 1e9));
       }
 
       public void initialize(long currentTime)
@@ -97,11 +99,13 @@ public class TestBarrierSchedulerCyclic
       private final TestCyclicData cyclicData = new TestCyclicData();
       private final TimingInformation timingInformation;
 
+      boolean firstTick = true;
+
       public UpdateVariablesTask(long divisor)
       {
          super(divisor);
 
-         timingInformation = new TimingInformation(SCHEDULER_PERIOD_NANOSECONDS * divisor);
+         timingInformation = new TimingInformation("Update Task", SCHEDULER_PERIOD_NANOSECONDS * divisor);
       }
 
       public void doReporting()
@@ -119,7 +123,6 @@ public class TestBarrierSchedulerCyclic
       @Override
       protected boolean initialize()
       {
-         timingInformation.initialize(System.nanoTime());
          return true;
       }
 
@@ -151,7 +154,15 @@ public class TestBarrierSchedulerCyclic
             cyclicData.someDoubles[i] = random.nextDouble();
          }
 
-         timingInformation.updateTimingInformation(System.nanoTime());
+         if (firstTick)
+         {
+            timingInformation.initialize(System.nanoTime());
+            firstTick = false;
+         }
+         else
+         {
+            timingInformation.updateTimingInformation(System.nanoTime());
+         }
       }
    }
 
@@ -166,11 +177,13 @@ public class TestBarrierSchedulerCyclic
       private float aFloat;
       private double aDouble;
 
+      boolean firstTick = true;
+
       public ExamineVariablesTask(long divisor)
       {
          super(divisor);
 
-         timingInformation = new TimingInformation(SCHEDULER_PERIOD_NANOSECONDS * divisor);
+         timingInformation = new TimingInformation("Examine Task", SCHEDULER_PERIOD_NANOSECONDS * divisor);
       }
 
       public void doReporting()
@@ -188,7 +201,6 @@ public class TestBarrierSchedulerCyclic
       @Override
       protected boolean initialize()
       {
-         timingInformation.initialize(System.nanoTime());
          return true;
       }
 
@@ -205,13 +217,21 @@ public class TestBarrierSchedulerCyclic
          aFloat = (float) (cyclicData.someFloats[random.nextInt(cyclicData.someFloats.length)] * random.nextDouble());
          aDouble = cyclicData.someDoubles[random.nextInt(cyclicData.someDoubles.length)] * random.nextDouble();
 
-         timingInformation.updateTimingInformation(System.nanoTime());
+         if (firstTick)
+         {
+            timingInformation.initialize(System.nanoTime());
+            firstTick = false;
+         }
+         else
+         {
+            timingInformation.updateTimingInformation(System.nanoTime());
+         }
       }
    }
 
    public static void main(String[] args) throws InterruptedException
    {
-      UpdateVariablesTask updateVariablesTask = new UpdateVariablesTask(1);
+      UpdateVariablesTask updateVariablesTask = new UpdateVariablesTask(2);
       ExamineVariablesTask examineVariablesTask = new ExamineVariablesTask(10);
 
       PriorityParameters updateTaskPriority = new PriorityParameters(95);
@@ -238,7 +258,7 @@ public class TestBarrierSchedulerCyclic
       PriorityParameters schedulerPriority = new PriorityParameters(99);
       PeriodicParameters periodicParameters = new PeriodicParameters(SCHEDULER_PERIOD_NANOSECONDS);
 
-      final TimingInformation schedulerTimingInformation = new TimingInformation(SCHEDULER_PERIOD_NANOSECONDS);
+      final TimingInformation schedulerTimingInformation = new TimingInformation("Scheduler", SCHEDULER_PERIOD_NANOSECONDS);
       Runnable schedulerRunnable = new Runnable()
       {
          boolean firstTick = true;
