@@ -238,23 +238,7 @@ public class TestBarrierSchedulerCyclic
       PriorityParameters schedulerPriority = new PriorityParameters(99);
       PeriodicParameters periodicParameters = new PeriodicParameters(SCHEDULER_PERIOD_NANOSECONDS);
 
-      RealtimeThread schedulerThread = new RealtimeThread(schedulerPriority, periodicParameters, "barrierSchedulerThread")
-      {
-         private void doAction()
-         {
-            super.waitForNextPeriod();
-            barrierScheduler.run();
-         }
-
-         @Override
-         public void run()
-         {
-            while (true)
-            {
-               doAction();
-            }
-         }
-      };
+      PeriodicRealtimeThread schedulerThread = new PeriodicRealtimeThread(schedulerPriority, periodicParameters, barrierScheduler, "barrierSchedulerThread");
 
       System.out.println("Pinning scheduler thread to core 1");
       schedulerThread.setAffinity(cpuPackage.getCore(1).getDefaultProcessor());
