@@ -250,7 +250,6 @@ public class TestBarrierSchedulerCyclic
             {
                schedulerTimingInformation.initialize(System.nanoTime());
                firstTick = false;
-               return;
             }
             else
             {
