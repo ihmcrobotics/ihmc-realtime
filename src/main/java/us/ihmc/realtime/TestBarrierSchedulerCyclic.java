@@ -17,6 +17,8 @@ import java.util.Random;
 public class TestBarrierSchedulerCyclic
 {
    private static final long SCHEDULER_PERIOD_NANOSECONDS = 500000;
+   private static final int NUM_ITERATIONS_OF_SCHEDULER = 120000;
+   private static final double ESTIMATED_DURATION = (double) SCHEDULER_PERIOD_NANOSECONDS * (double) NUM_ITERATIONS_OF_SCHEDULER / 1e9;
 
    public static class TestCyclicContext extends BindingContext
    {
@@ -242,6 +244,10 @@ public class TestBarrierSchedulerCyclic
 
       Package cpuPackage = new CPUTopology().getPackage(0);
 
+      CPUDMALatency.setLatency(0);
+
+      System.out.println("Starting cyclic test [Iterations: " + NUM_ITERATIONS_OF_SCHEDULER + "; Estimated Duration: " + ESTIMATED_DURATION + "s]");
+
       System.out.println("Pinning examine thread to core 2 and update thread to core 3.");
       examineThread.setAffinity(cpuPackage.getCore(2).getDefaultProcessor());
       updateThread.setAffinity(cpuPackage.getCore(3).getDefaultProcessor());
@@ -259,42 +265,41 @@ public class TestBarrierSchedulerCyclic
       PeriodicParameters periodicParameters = new PeriodicParameters(SCHEDULER_PERIOD_NANOSECONDS);
 
       final TimingInformation schedulerTimingInformation = new TimingInformation("Scheduler", SCHEDULER_PERIOD_NANOSECONDS);
-      Runnable schedulerRunnable = new Runnable()
+
+      RealtimeThread schedulerThread = new RealtimeThread(schedulerPriority, periodicParameters, "barrierSchedulerThread")
       {
          boolean firstTick = true;
-
+         int iterations = -1;
          @Override
          public void run()
          {
-            if (firstTick)
+            while (iterations < NUM_ITERATIONS_OF_SCHEDULER)
             {
-               schedulerTimingInformation.initialize(System.nanoTime());
-               firstTick = false;
-            }
-            else
-            {
-               schedulerTimingInformation.updateTimingInformation(System.nanoTime());
+               super.waitForNextPeriod();
+               if (firstTick)
+               {
+                  schedulerTimingInformation.initialize(System.nanoTime());
+                  firstTick = false;
+               }
+               else
+               {
+                  schedulerTimingInformation.updateTimingInformation(System.nanoTime());
+               }
+
+               barrierScheduler.run();
+               iterations++;
             }
 
-            barrierScheduler.run();
+            updateVariablesTask.doReporting();
+            examineVariablesTask.doReporting();
+
+            System.out.format("Scheduler Jitter: avg = %.4f us, max = %.4f us%n", schedulerTimingInformation.getFinalAvgJitterMicroseconds(),
+                              schedulerTimingInformation.getFinalMaxJitterMicroseconds());
          }
       };
 
-      PeriodicRealtimeThread schedulerThread = new PeriodicRealtimeThread(schedulerPriority, periodicParameters, schedulerRunnable, "barrierSchedulerThread");
-
       System.out.println("Pinning scheduler thread to core 1");
       schedulerThread.setAffinity(cpuPackage.getCore(1).getDefaultProcessor());
-
-      Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-
-         updateVariablesTask.doReporting();
-         examineVariablesTask.doReporting();
-
-         System.out.format("Scheduler Jitter: avg = %.4f us, max = %.4f us%n", schedulerTimingInformation.getFinalAvgJitterMicroseconds(),
-                           schedulerTimingInformation.getFinalMaxJitterMicroseconds());
-
-      }));
-
       schedulerThread.start();
       schedulerThread.join();
    }
