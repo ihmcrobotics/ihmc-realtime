@@ -20,6 +20,13 @@ public abstract class Task<C> implements Runnable
    private boolean initialized;
 
    /**
+    * Signals to the task to break its loop and run its {@link #cleanup()} method.
+    */
+   private boolean shutdownRequested = false;
+
+   private boolean hasShutdown = false;
+
+   /**
     * Creates a new task, which can later be scheduled.
     *
     * @param divisor the divisor of the scheduler frequency
@@ -46,6 +53,12 @@ public abstract class Task<C> implements Runnable
     * This method is executed on the task's thread.
     */
    protected abstract void execute();
+
+   /**
+    * Perform any cleanup before shutting down. Called the next tick after a
+    * shutdown request from the barrier scheduler.
+    */
+   protected abstract void cleanup();
 
    /**
     * Bubbles internal context data up the the master context.
@@ -102,13 +115,32 @@ public abstract class Task<C> implements Runnable
       return barrier.release();
    }
 
+   void requestShutdown()
+   {
+      shutdownRequested = true;
+      if (isSleeping())
+      {
+         release();
+      }
+   }
+
+   public boolean hasShutdown()
+   {
+      return hasShutdown;
+   }
+
    @Override
    public final void run()
    {
-      while (true)
+      while (!shutdownRequested)
       {
          // Block until the scheduler releases this task for its next execution.
          barrier.await();
+
+         if (shutdownRequested)
+         {
+            continue;
+         }
 
          // Attempt to initialize the task. If the initialization fails then it will be attempted
          // again on the next iteration.
@@ -119,5 +151,9 @@ public abstract class Task<C> implements Runnable
          if (initialized)
             execute();
       }
+
+      cleanup();
+
+      hasShutdown = true;
    }
 }

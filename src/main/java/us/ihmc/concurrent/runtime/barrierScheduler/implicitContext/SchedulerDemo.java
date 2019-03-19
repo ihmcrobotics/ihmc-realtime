@@ -49,6 +49,16 @@ public class SchedulerDemo
          counter++;
       }
 
+      /**
+       * Perform any cleanup before shutting down. Called the next tick after a
+       * shutdown request from the barrier scheduler.
+       */
+      @Override
+      protected void cleanup()
+      {
+
+      }
+
       @Override
       protected void updateMasterContext(Context masterContext)
       {
@@ -85,6 +95,16 @@ public class SchedulerDemo
       {
          // Use only the locally copied context data in the execute() loop.
          System.out.println("[subscriber] counter: " + counter);
+      }
+
+      /**
+       * Perform any cleanup before shutting down. Called the next tick after a
+       * shutdown request from the barrier scheduler.
+       */
+      @Override
+      protected void cleanup()
+      {
+
       }
 
       @Override

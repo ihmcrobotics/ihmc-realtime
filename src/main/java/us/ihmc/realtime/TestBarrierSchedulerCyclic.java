@@ -166,6 +166,16 @@ public class TestBarrierSchedulerCyclic
             timingInformation.updateTimingInformation(System.nanoTime());
          }
       }
+
+      /**
+       * Perform any cleanup before shutting down. Called the next tick after a
+       * shutdown request from the barrier scheduler.
+       */
+      @Override
+      protected void cleanup()
+      {
+
+      }
    }
 
    private static class ExamineVariablesTask extends CopyableContextTask
@@ -229,6 +239,16 @@ public class TestBarrierSchedulerCyclic
             timingInformation.updateTimingInformation(System.nanoTime());
          }
       }
+
+      /**
+       * Perform any cleanup before shutting down. Called the next tick after a
+       * shutdown request from the barrier scheduler.
+       */
+      @Override
+      protected void cleanup()
+      {
+
+      }
    }
 
    public static void main(String[] args) throws InterruptedException
@@ -290,6 +310,8 @@ public class TestBarrierSchedulerCyclic
                iterations++;
             }
 
+            barrierScheduler.shutdown();
+
             updateVariablesTask.doReporting();
             examineVariablesTask.doReporting();
 
@@ -302,5 +324,7 @@ public class TestBarrierSchedulerCyclic
       schedulerThread.setAffinity(cpuPackage.getCore(1).getDefaultProcessor());
       schedulerThread.start();
       schedulerThread.join();
+
+      System.out.println("Thread done??");
    }
 }

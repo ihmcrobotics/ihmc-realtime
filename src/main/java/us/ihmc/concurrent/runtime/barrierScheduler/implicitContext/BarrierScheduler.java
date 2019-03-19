@@ -165,4 +165,19 @@ public class BarrierScheduler<C> implements Runnable
 
       return true;
    }
+
+   public void shutdown()
+   {
+      System.out.println("Shutting down...");
+      for (int i = 0; i < tasks.size(); i++)
+      {
+         System.out.println("Shutting down task " + i);
+         Task<C> task = tasks.get(i);
+
+         while(!task.hasShutdown())
+         {
+            task.requestShutdown();
+         }
+      }
+   }
 }
