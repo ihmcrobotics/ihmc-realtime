@@ -115,6 +115,11 @@ public abstract class Task<C> implements Runnable
       return barrier.release();
    }
 
+   /**
+    * Package private method to begin shutdown process.
+    * This will wake up a sleeping task, which will then
+    * skip its next execution and go straight to its {@link #cleanup()}
+    */
    void requestShutdown()
    {
       shutdownRequested = true;
@@ -124,6 +129,10 @@ public abstract class Task<C> implements Runnable
       }
    }
 
+   /**
+    * Method to see if a task has shut down after its {@link #cleanup()}.
+    * @return whether or not the task has finished its cleanup and shut down.
+    */
    public boolean hasShutdown()
    {
       return hasShutdown;

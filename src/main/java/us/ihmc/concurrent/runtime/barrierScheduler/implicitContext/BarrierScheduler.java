@@ -166,6 +166,10 @@ public class BarrierScheduler<C> implements Runnable
       return true;
    }
 
+   /**
+    * Requests shutdown on all tasks.
+    * This is a blocking call.
+    */
    public void shutdown()
    {
       for (int i = 0; i < tasks.size(); i++)
