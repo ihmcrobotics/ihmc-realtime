@@ -27,13 +27,13 @@ remotes {
    }
 }
 
-mainClassName = 'us.ihmc.realtime.TestCyclic'
+mainClassName = 'us.ihmc.realtime.TestBarrierSchedulerCyclic'
 task deploy(dependsOn: ['installDist']) {
   doLast {
     ssh.run {
       session(remotes.rtComputer) {
-        put(from: "build/install/IHMCRealtime", into: '.')
-        execute('chmod +x ' + './IHMCRealtime/bin/IHMCRealtime')
+        put(from: "build/install/ihmc-realtime", into: '.')
+        execute('chmod +x ' + './ihmc-realtime/bin/ihmc-realtime')
       }
     }
   }
