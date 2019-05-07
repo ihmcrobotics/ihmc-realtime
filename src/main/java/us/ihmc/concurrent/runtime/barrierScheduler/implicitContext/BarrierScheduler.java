@@ -29,6 +29,12 @@ public class BarrierScheduler<C> implements Runnable
    private final List<? extends Task<C>> tasks;
 
    /**
+    * A boolean for every task that is used as a temporary flag indicating the task is pending and
+    * sleeping.
+    */
+   private final boolean[] releaseTasks;
+
+   /**
     * The master context. This is the context to which all tasks bubble up their outputs.
     * Immediately after a scheduler tick this context object holds the latest context data from all
     * threads that were sleeping on the tick, and possible stale data from those that have not yet
@@ -83,6 +89,7 @@ public class BarrierScheduler<C> implements Runnable
    public BarrierScheduler(Collection<? extends Task<C>> tasks, C masterContext, TaskOverrunBehavior overrunBehavior)
    {
       this.tasks = new ArrayList<>(tasks); // defensive copy
+      this.releaseTasks = new boolean[tasks.size()];
       this.masterContext = masterContext;
       this.overrunBehavior = overrunBehavior;
    }
@@ -90,29 +97,6 @@ public class BarrierScheduler<C> implements Runnable
    @Override
    public void run()
    {
-      // Copy data from pending and sleeping tasks to the master context object.
-      for (int i = 0; i < tasks.size(); i++)
-      {
-         Task<C> task = tasks.get(i);
-
-         // Wait until a task's NEXT execution cycle to copy the output data from it's PREVIOUS
-         // cycle. A possible optimization is to copy the data immediately when the thread goes
-         // to sleep, even if it has ticks remaining until it will wake up again. But, this
-         // introduces variable latency, so is not used here.
-         if (task.isPending(tick) && task.isSleeping())
-            task.updateMasterContext(masterContext);
-      }
-
-      // Copy data down from the master context object to threads that are pending and sleeping. No
-      // use in preemptively copying to a task that is sleeping but isn't pending since it won't do
-      // anything with the data until its next execution cycle.
-      for (int i = 0; i < tasks.size(); i++)
-      {
-         Task<C> task = tasks.get(i);
-         if (task.isPending(tick) && task.isSleeping())
-            task.updateLocalContext(masterContext);
-      }
-
       // If busy wait is enabled, sleep until all pending-execution tasks are sleeping.
       if (overrunBehavior == TaskOverrunBehavior.BUSY_WAIT)
       {
@@ -131,16 +115,43 @@ public class BarrierScheduler<C> implements Runnable
          }
       }
 
-      // Release pending and sleeping tasks to kick them off again.
+      // Record whether a task is ready to be released. Do this once to avoid inconsistency in case
+      // the task becomes ready in between the following for loops.
       for (int i = 0; i < tasks.size(); i++)
       {
          Task<C> task = tasks.get(i);
-         if (task.isPending(tick) && task.isSleeping())
+         releaseTasks[i] = task.isPending(tick) && task.isSleeping();
+      }
+
+      // Copy data from pending and sleeping tasks to the master context object.
+      for (int i = 0; i < tasks.size(); i++)
+      {
+         // Wait until a task's NEXT execution cycle to copy the output data from it's PREVIOUS
+         // cycle. A possible optimization is to copy the data immediately when the thread goes
+         // to sleep, even if it has ticks remaining until it will wake up again. But, this
+         // introduces variable latency, so is not used here.
+         if (releaseTasks[i])
+            tasks.get(i).updateMasterContext(masterContext);
+      }
+
+      // Copy data down from the master context object to threads that are pending and sleeping. No
+      // use in preemptively copying to a task that is sleeping but isn't pending since it won't do
+      // anything with the data until its next execution cycle.
+      for (int i = 0; i < tasks.size(); i++)
+      {
+         if (releaseTasks[i])
+            tasks.get(i).updateLocalContext(masterContext);
+      }
+
+      // Release pending and sleeping tasks to kick them off again.
+      for (int i = 0; i < tasks.size(); i++)
+      {
+         if (releaseTasks[i])
          {
             // We have already verified that the job is waiting on the barrier. This call to
             // release() will return immediately and free the job thread to execute another
             // iteration.
-            if (!task.release())
+            if (!tasks.get(i).release())
             {
                // Something has gone unsynchronized... just give up.
                throw new RuntimeException("tried to release an unwaiting task");
