@@ -178,8 +178,8 @@ public class BarrierScheduler<C> implements Runnable
    }
 
    /**
-    * Requests shutdown on all tasks.
-    * This is a blocking call.
+    * Requests shutdown on all tasks. This is a blocking call. After calling this do not call the
+    * {@link #run()} method anymore.
     */
    public void shutdown()
    {
