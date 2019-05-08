@@ -91,7 +91,7 @@ public abstract class Task<C> implements Runnable
     */
    boolean isPending(long schedulerTick)
    {
-      return schedulerTick % divisor == 0;
+      return schedulerTick % divisor == 0 && !hasShutdown();
    }
 
    /**
