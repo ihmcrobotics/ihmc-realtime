@@ -26,6 +26,10 @@ public abstract class Task<C> implements Runnable
 
    private boolean hasShutdown = false;
 
+   private boolean isPending = false;
+
+   private long ticksSinceLastExecute = 0;
+
    /**
     * Creates a new task, which can later be scheduled.
     *
@@ -82,16 +86,35 @@ public abstract class Task<C> implements Runnable
     */
    protected abstract void updateLocalContext(C context);
 
-   /**
-    * Returns whether or not this task should be nominally scheduled to execute on this tick. If it
-    * is, the scheduler should do its best to execute the <b>on this tick</b>.
-    *
-    * @param schedulerTick the current scheduler tick
-    * @return {@code true} if this task should execute on this tick.
-    */
-   boolean isPending(long schedulerTick)
+   void tick(long schedulerTick, BarrierScheduler.TaskOverrunBehavior overrunBehavior)
    {
-      return schedulerTick % divisor == 0;
+      ticksSinceLastExecute++;
+      switch (overrunBehavior)
+      {
+      case SKIP_AND_CATCH_UP:
+         if (!isPending)
+            isPending = schedulerTick % divisor == 0;
+         break;
+      case SKIP_AND_MAINTAIN_DELTA:
+         if (!isPending)
+            isPending = (ticksSinceLastExecute == divisor);
+         break;
+      case BUSY_WAIT:
+      case SKIP_TICK:
+      default:
+         isPending = schedulerTick % divisor == 0;
+         break;
+      }
+   }
+
+   /**
+    * Returns whether or not this task should be nominally scheduled to execute at the next opportunity.
+    *
+    * @return {@code true} if this task should execute at the next opportunity.
+    */
+   boolean isPending()
+   {
+      return isPending;
    }
 
    /**
@@ -158,7 +181,10 @@ public abstract class Task<C> implements Runnable
 
          // Only execute if the initialization procedure has executed successfully.
          if (initialized)
+         {
             execute();
+            ticksSinceLastExecute = 0;
+         }
       }
 
       cleanup();

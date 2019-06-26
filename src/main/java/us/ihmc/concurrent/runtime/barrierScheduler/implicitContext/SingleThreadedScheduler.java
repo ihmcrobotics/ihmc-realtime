@@ -35,14 +35,15 @@ public class SingleThreadedScheduler<C> implements Runnable
       for (int i = 0; i < tasks.size(); i++)
       {
          Task<C> task = tasks.get(i);
-         if (task.isPending(tick))
+         if (task.isPending())
             task.updateLocalContext(masterContext);
       }
 
       for (int i = 0; i < tasks.size(); i++)
       {
          Task<C> task = tasks.get(i);
-         if (task.isPending(tick))
+         task.tick(tick, null);
+         if (task.isPending())
          {
             if (!tasksInitialized[i])
                tasksInitialized[i] = task.initialize();
@@ -56,7 +57,7 @@ public class SingleThreadedScheduler<C> implements Runnable
       for (int i = 0; i < tasks.size(); i++)
       {
          Task<C> task = tasks.get(i);
-         if (task.isPending(tick))
+         if (task.isPending())
             task.updateMasterContext(masterContext);
       }
 

@@ -63,6 +63,23 @@ public class BarrierScheduler<C> implements Runnable
        * the tasks. Its next iterations are skipped until it finishes.
        */
       SKIP_TICK,
+
+      /**
+       * An overrunning task will skip ticks until it finishes its current iteration and then it will
+       * attempt to get back on its natural multiple of the scheduler divisor. This is good for tasks
+       * that typically complete faster than their deadline upper bound but might occasionally overshoot
+       * if overcorrection on the time delta is acceptable.
+       */
+      SKIP_AND_CATCH_UP,
+
+      /**
+       * An overrunning task will skip ticks until it finishes its current iteration and then it will
+       * use this new point as its origin for determining its pending state given the scheduler divisor;
+       * that is to say, if a task has divisor N, and one of its execution overruns by N + x, once it completes,
+       * it will resume executing every N ticks after its most recent completion instead of rescheduling based
+       * on scheduler absolute time like normal SKIP_TICK.
+       */
+      SKIP_AND_MAINTAIN_DELTA,
    }
 
    /**
@@ -120,7 +137,8 @@ public class BarrierScheduler<C> implements Runnable
       for (int i = 0; i < tasks.size(); i++)
       {
          Task<C> task = tasks.get(i);
-         releaseTasks[i] = task.isPending(tick) && task.isSleeping();
+         task.tick(tick, overrunBehavior);
+         releaseTasks[i] = task.isPending() && task.isSleeping();
       }
 
       // Copy data from pending and sleeping tasks to the master context object.
@@ -170,7 +188,7 @@ public class BarrierScheduler<C> implements Runnable
 
          // If the task is scheduled to run this tick but isn't yet sleeping then it is behind
          // schedule.
-         if (task.isPending(tick) && !task.isSleeping())
+         if (task.isPending() && !task.isSleeping())
             return false;
       }
 
