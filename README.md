@@ -1,4 +1,4 @@
-#IHMCRealtime
+# IHMC Realtime
 
 IHMCRealtime is a simple support library that provides four feature sets:
 
