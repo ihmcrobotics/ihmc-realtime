@@ -1,4 +1,4 @@
-#IHMCRealtime
+# IHMC Realtime
 
 IHMCRealtime is a simple support library that provides four feature sets:
 
@@ -38,7 +38,7 @@ IHMC Realtime can be downloaded from BinTray using Maven or gradle. Add the foll
 repositories {
 	jcenter()
 	maven {
-   	   url  "http://dl.bintray.com/ihmcrobotics/maven-release"
+   	   url  "https://dl.bintray.com/ihmcrobotics/maven-release"
 	}
 }
 dependencies {

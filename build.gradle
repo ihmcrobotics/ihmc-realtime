@@ -1,13 +1,14 @@
 plugins {
-   id("us.ihmc.ihmc-build") version "0.15.7"
-   id("us.ihmc.ihmc-ci") version "4.23"
+   id("us.ihmc.ihmc-build") version "0.20.1"
+   id("us.ihmc.ihmc-ci") version "5.3"
+   id("us.ihmc.ihmc-cd") version "1.8"
    id("org.hidetake.ssh") version "2.9.0"
    id("application")
 }
 
 ihmc {
    group = "us.ihmc"
-   version = "1.2.6"
+   version = "1.3.0"
    vcsUrl = "https://github.com/ihmcrobotics/ihmc-realtime"
    openSource = true
 
@@ -16,7 +17,7 @@ ihmc {
 }
 
 mainDependencies {
-   compile("us.ihmc:ihmc-native-library-loader:1.1")
+   compile("us.ihmc:ihmc-native-library-loader:1.2.1")
 }
 
 remotes {
