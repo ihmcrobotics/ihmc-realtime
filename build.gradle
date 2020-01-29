@@ -17,7 +17,7 @@ ihmc {
 }
 
 mainDependencies {
-   compile("us.ihmc:ihmc-native-library-loader:1.1")
+   compile("us.ihmc:ihmc-native-library-loader:1.2.1")
 }
 
 remotes {
