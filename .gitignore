@@ -9,3 +9,4 @@ build
 **/build
 .idea/
 out/
+**/rebel.xml
