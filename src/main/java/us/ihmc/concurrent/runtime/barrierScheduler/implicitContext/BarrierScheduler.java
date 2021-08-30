@@ -206,6 +206,17 @@ public class BarrierScheduler<C> implements Runnable
 
          Thread.sleep(1);
       }
+
+      // Update master context and each task's local context before giving back the hand.
+      for (int i = 0; i < tasks.size(); i++)
+      {
+         tasks.get(i).updateMasterContext(masterContext);
+      }
+
+      for (int i = 0; i < tasks.size(); i++)
+      {
+         tasks.get(i).updateLocalContext(masterContext);
+      }
    }
 
    /**
