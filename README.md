@@ -22,7 +22,7 @@ the underlying data model, especially in systems with latency such as web UI's b
 and as such cannot afford to be interrupted by many things that would normally be allowed to take precedence over a thread of execution, such as the operating system or GUI.  As such, this library is meant to be used on platforms that feature fully preemptible kernels.
 
 ### Caveats
-Real-time computation in a multi-threaded environment is not a small problem.  This library aims to provide the bare essentials in terms of real-time computation, and so pushes some of the challenge on to the developer instead of solving it in code.  Specifically, IHMCRealtime *does not account for*:
+Real-time computation in a multi-threaded environment is not a small problem.  This library aims to provide the bare essentials in terms of real-time computation, and so pushes some of the challenge on to the developer instead of solving it in code.  Specifically, IHMC Realtime *does not account for*:
 
 1. Garbage Collection
 2. [Priority inversion](http://en.wikipedia.org/wiki/Priority_inversion)
@@ -34,15 +34,14 @@ We work around these two restrictions by writing low-to-zero object allocation c
 ### Binary
 IHMC Realtime can be downloaded from BinTray using Maven or gradle. Add the following to your gradle build script
 
-```
+
+```gradle
 repositories {
-	jcenter()
-	maven {
-   	   url  "https://dl.bintray.com/ihmcrobotics/maven-release"
-	}
+   mavenCentral()
 }
+
 dependencies {
-       compile group: 'us.ihmc', name: 'IHMCRealtime', version: '1.2.1'
+       compile group: 'us.ihmc', name: 'ihmc-realtime', version: '1.4.0'
 }
 ```
 
@@ -69,10 +68,10 @@ OS X, but the deadlines will not be enforced nearly as hard as they are on Linux
 
 #### Dependencies
 
-On Ubuntu, you will need a minimum of the `cmake`, `build-essential`, and `libcap-dev` installed from your package manager.  You will also need a JDK installation for the JNI headers.  IHMCRealtime was developed against OpenJDK 7
+On Ubuntu, you will need a minimum of the `cmake`, `build-essential`, and `libcap-dev` installed from your package manager.  You will also need a JDK installation for the JNI headers.  IHMCRealtime was developed against OpenJDK 8
 from the Ubuntu package repositories.
 
-    $ sudo apt-get update && sudo apt-get install cmake build-essential libcap-dev openjdk-7-jdk
+    $ sudo apt-get update && sudo apt-get install cmake build-essential libcap-dev openjdk-8-jdk
 
 #### Invoking CMake
 

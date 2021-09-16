@@ -17,9 +17,8 @@ import java.util.List;
 public class BarrierScheduler<C> implements Runnable
 {
    /**
-    * If {@link #overrunBehavior} is {@link TaskOverrunBehavior#BUSY_WAIT}, this is the time
-    * resolution at which to busy wait. This should be much faster than the fastest loop period in
-    * the scheduler.
+    * If {@link #overrunBehavior} is {@link TaskOverrunBehavior#BUSY_WAIT}, this is the time resolution
+    * at which to busy wait. This should be much faster than the fastest loop period in the scheduler.
     */
    private static final int BUSY_SLEEP_RESOLUTION_NS = 10000; // 10 us
 
@@ -35,10 +34,9 @@ public class BarrierScheduler<C> implements Runnable
    private final boolean[] releaseTasks;
 
    /**
-    * The master context. This is the context to which all tasks bubble up their outputs.
-    * Immediately after a scheduler tick this context object holds the latest context data from all
-    * threads that were sleeping on the tick, and possible stale data from those that have not yet
-    * fallen asleep.
+    * The master context. This is the context to which all tasks bubble up their outputs. Immediately
+    * after a scheduler tick this context object holds the latest context data from all threads that
+    * were sleeping on the tick, and possible stale data from those that have not yet fallen asleep.
     */
    private final C masterContext;
 
@@ -49,18 +47,18 @@ public class BarrierScheduler<C> implements Runnable
    public enum TaskOverrunBehavior
    {
       /**
-       * An overrunning task will be busy-waited on until it completes. This will block the
-       * scheduler. This is useful for simulation where a slow task implementation should block the
-       * simulation thread until it completes, ensuring a consistent simulation-clock loop rate.
+       * An overrunning task will be busy-waited on until it completes. This will block the scheduler.
+       * This is useful for simulation where a slow task implementation should block the simulation thread
+       * until it completes, ensuring a consistent simulation-clock loop rate.
        * <p>
-       * NOTE: This should not be used in a realtime context as it will cause other non-overrun
-       * loops to miss their deadlines.
+       * NOTE: This should not be used in a realtime context as it will cause other non-overrun loops to
+       * miss their deadlines.
        */
       BUSY_WAIT,
 
       /**
-       * An overrunning task will be allowed to continue while the scheduler schedules the rest of
-       * the tasks. Its next iterations are skipped until it finishes.
+       * An overrunning task will be allowed to continue while the scheduler schedules the rest of the
+       * tasks. Its next iterations are skipped until it finishes.
        */
       SKIP_TICK,
    }
@@ -178,6 +176,50 @@ public class BarrierScheduler<C> implements Runnable
    }
 
    /**
+    * Waits until every task is sleeping.
+    * <p>
+    * This should be called only for pausing the scheduler and its tasks.
+    * </p>
+    */
+   public void waitUntilTasksDone() throws InterruptedException
+   {
+      long initialTick = tick;
+
+      while (true)
+      {
+         if (tick > initialTick)
+            throw new IllegalStateException("Cannot invoke waitUntilTasksDone while the scheduler is still running");
+
+         boolean allDone = true;
+
+         for (int i = 0; i < tasks.size(); i++)
+         {
+            if (!tasks.get(i).isSleeping())
+            {
+               allDone = false;
+               break;
+            }
+         }
+
+         if (allDone)
+            break;
+
+         Thread.sleep(1);
+      }
+
+      // Update master context and each task's local context before giving back the hand.
+      for (int i = 0; i < tasks.size(); i++)
+      {
+         tasks.get(i).updateMasterContext(masterContext);
+      }
+
+      for (int i = 0; i < tasks.size(); i++)
+      {
+         tasks.get(i).updateLocalContext(masterContext);
+      }
+   }
+
+   /**
     * Requests shutdown on all tasks. This is a blocking call. After calling this do not call the
     * {@link #run()} method anymore.
     */
@@ -187,7 +229,7 @@ public class BarrierScheduler<C> implements Runnable
       {
          Task<C> task = tasks.get(i);
 
-         while(!task.hasShutdown())
+         while (!task.hasShutdown())
          {
             task.requestShutdown();
          }
