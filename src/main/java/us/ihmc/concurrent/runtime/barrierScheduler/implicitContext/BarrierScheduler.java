@@ -252,11 +252,6 @@ public class BarrierScheduler<C> implements Runnable
       }
    }
 
-   public boolean handleTaskException(Task<C> task, Exception thrownException)
-   {
-      throw new BarrierSchedulerException("Unhandled exception", thrownException);
-   }
-
    /**
     * Requests shutdown on all tasks. This is a blocking call. After calling this do not call the
     * {@link #run()} method anymore.
