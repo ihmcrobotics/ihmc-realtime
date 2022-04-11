@@ -74,7 +74,7 @@ public class BarrierScheduler<C> implements Runnable
    /**
     * How to handle exception thrown by a task.
     */
-   private TaskExceptionHandler<C> taskExceptionHandler = TaskExceptionHandler.newTaskExceptionThrower();
+   private TaskExceptionHandler<C> taskExceptionHandler = TaskExceptionHandler.newDefaultTaskExceptionHandler();
 
    /**
     * The scheduler tick counter. This value is incremented each time the scheduler executes.
@@ -290,7 +290,7 @@ public class BarrierScheduler<C> implements Runnable
        */
       boolean handleException(Task<C> task, Exception exception);
 
-      static <C> TaskExceptionHandler<C> newTaskExceptionThrower()
+      static <C> TaskExceptionHandler<C> newDefaultTaskExceptionHandler()
       {
          return (task, exception) ->
          {
