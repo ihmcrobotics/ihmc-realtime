@@ -1,5 +1,7 @@
 package us.ihmc.concurrent.runtime.barrierScheduler.implicitContext;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public abstract class Task<C> implements Runnable
 {
    /**
@@ -8,8 +10,8 @@ public abstract class Task<C> implements Runnable
    private final long divisor;
 
    /**
-    * The barrier used to await each execution cycle in order to synchronize the task to its divisor
-    * of the scheduler tick frequency.
+    * The barrier used to await each execution cycle in order to synchronize the task to its divisor of
+    * the scheduler tick frequency.
     */
    // participants: scheduler, task
    private final ParkingBarrier barrier = new ParkingBarrier();
@@ -25,6 +27,8 @@ public abstract class Task<C> implements Runnable
    private boolean shutdownRequested = false;
 
    private boolean hasShutdown = false;
+
+   private final AtomicReference<Exception> thrownException = new AtomicReference<>(null);
 
    /**
     * Creates a new task, which can later be scheduled.
@@ -42,8 +46,8 @@ public abstract class Task<C> implements Runnable
    /**
     * Initializes the internal state of the task.
     * <p>
-    * Called once, immediately before the first {@link #execute()} call. This method is executed on
-    * the task's thread.
+    * Called once, immediately before the first {@link #execute()} call. This method is executed on the
+    * task's thread.
     */
    protected abstract boolean initialize();
 
@@ -55,8 +59,8 @@ public abstract class Task<C> implements Runnable
    protected abstract void execute();
 
    /**
-    * Perform any cleanup before shutting down. Called the next tick after a
-    * shutdown request from the barrier scheduler.
+    * Perform any cleanup before shutting down. Called the next tick after a shutdown request from the
+    * barrier scheduler.
     */
    protected abstract void cleanup();
 
@@ -64,8 +68,8 @@ public abstract class Task<C> implements Runnable
     * Bubbles internal context data up the the master context.
     * <p>
     * Do not hold a reference to {@code context}. Instead, copy internal data to it as quickly as
-    * possible then drop the reference. This method is called on the scheduler's thread while the
-    * task is sleeping.
+    * possible then drop the reference. This method is called on the scheduler's thread while the task
+    * is sleeping.
     *
     * @param context the master context
     */
@@ -83,8 +87,8 @@ public abstract class Task<C> implements Runnable
    protected abstract void updateLocalContext(C context);
 
    /**
-    * Returns whether or not this task should be nominally scheduled to execute on this tick. If it
-    * is, the scheduler should do its best to execute the <b>on this tick</b>.
+    * Returns whether or not this task should be nominally scheduled to execute on this tick. If it is,
+    * the scheduler should do its best to execute the <b>on this tick</b>.
     *
     * @param schedulerTick the current scheduler tick
     * @return {@code true} if this task should execute on this tick.
@@ -116,9 +120,8 @@ public abstract class Task<C> implements Runnable
    }
 
    /**
-    * Package private method to begin shutdown process.
-    * This will wake up a sleeping task, which will then
-    * skip its next execution and go straight to its {@link #cleanup()}
+    * Package private method to begin shutdown process. This will wake up a sleeping task, which will
+    * then skip its next execution and go straight to its {@link #cleanup()}
     */
    void requestShutdown()
    {
@@ -131,11 +134,43 @@ public abstract class Task<C> implements Runnable
 
    /**
     * Method to see if a task has shut down after its {@link #cleanup()}.
+    * 
     * @return whether or not the task has finished its cleanup and shut down.
     */
    public boolean hasShutdown()
    {
       return hasShutdown;
+   }
+
+   /**
+    * Whether this task has thrown an exception and is waiting for resolution.
+    * 
+    * @return {@code true} if an exception was thrown and needs to be resolved for resuming.
+    */
+   boolean hasThrownException()
+   {
+      return thrownException.get() != null;
+   }
+
+   /**
+    * Gets the exception thrown by this task, or {@code null} if no exception was thrown.
+    * 
+    * @return the last exception thrown.
+    */
+   Exception getThrownException()
+   {
+      return thrownException.get();
+   }
+
+   /**
+    * Clears the last exception thrown and resume normal operation.
+    * <p>
+    * If no exception was thrown by this task, this method does nothing.
+    * </p>
+    */
+   void clearExceptionAndResume()
+   {
+      thrownException.set(null);
    }
 
    @Override
@@ -151,14 +186,25 @@ public abstract class Task<C> implements Runnable
             continue;
          }
 
-         // Attempt to initialize the task. If the initialization fails then it will be attempted
-         // again on the next iteration.
-         if (!initialized)
-            initialized = initialize();
+         if (hasThrownException())
+            continue; // We wait until the exception has been resolved.
 
-         // Only execute if the initialization procedure has executed successfully.
-         if (initialized)
-            execute();
+         try
+         {
+            // Attempt to initialize the task. If the initialization fails then it will be attempted
+            // again on the next iteration.
+            if (!initialized)
+               initialized = initialize();
+
+            // Only execute if the initialization procedure has executed successfully.
+            if (initialized)
+               execute();
+         }
+         catch (Exception e)
+         {
+            // Catch the exception that is to be resolved by the scheduler.
+            thrownException.set(e);
+         }
       }
 
       cleanup();

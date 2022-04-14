@@ -3,6 +3,7 @@ package us.ihmc.concurrent.runtime.barrierScheduler.implicitContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A realtime-safe thread scheduler that triggers its tasks at integer divisors of its own loop
@@ -71,6 +72,11 @@ public class BarrierScheduler<C> implements Runnable
    private final TaskOverrunBehavior overrunBehavior;
 
    /**
+    * How to handle exception thrown by a task.
+    */
+   private TaskExceptionHandler<C> taskExceptionHandler = TaskExceptionHandler.newDefaultTaskExceptionHandler();
+
+   /**
     * The scheduler tick counter. This value is incremented each time the scheduler executes.
     */
    private long tick;
@@ -90,6 +96,19 @@ public class BarrierScheduler<C> implements Runnable
       this.releaseTasks = new boolean[tasks.size()];
       this.masterContext = masterContext;
       this.overrunBehavior = overrunBehavior;
+   }
+
+   /**
+    * Sets a new behavior for the scheduler for when a task throws an exception.
+    * 
+    * @param taskExceptionHandler the new handler for managing exceptions. The default implementation,
+    *                             wraps the task's exception in a {@link BarrierSchedulerException} and
+    *                             throws it.
+    */
+   public void setTaskExceptionHandler(TaskExceptionHandler<C> taskExceptionHandler)
+   {
+      Objects.requireNonNull(taskExceptionHandler);
+      this.taskExceptionHandler = taskExceptionHandler;
    }
 
    @Override
@@ -152,8 +171,22 @@ public class BarrierScheduler<C> implements Runnable
             if (!tasks.get(i).release())
             {
                // Something has gone unsynchronized... just give up.
-               throw new RuntimeException("tried to release an unwaiting task");
+               throw new BarrierSchedulerException("tried to release an unwaiting task");
             }
+         }
+      }
+
+      for (int i = 0; i < tasks.size(); i++)
+      {
+         Task<C> task = tasks.get(i);
+         if (task.hasThrownException())
+         {
+            boolean restart = taskExceptionHandler.handleException(task, task.getThrownException());
+
+            if (restart)
+               task.clearExceptionAndResume();
+            else
+               shutdown();
          }
       }
 
@@ -233,6 +266,36 @@ public class BarrierScheduler<C> implements Runnable
          {
             task.requestShutdown();
          }
+      }
+   }
+
+   /**
+    * This interface can be used to provide the desired scheduler's behavior when one of the tasks is
+    * throwing an exception.
+    *
+    * @param <C> the type of the context used by the task.
+    */
+   public static interface TaskExceptionHandler<C>
+   {
+      /**
+       * Called when the given {@code task} has just thrown the given {@code exception}.
+       * <p>
+       * Implement this method to specify the desired behavior of the scheduler.
+       * </p>
+       * 
+       * @param task      the task that has just thrown an exception.
+       * @param exception the exception that has been thrown.
+       * @return {@code true} if the task can recover from the exception and thus should be resumed,
+       *         {@code false} if the exception is not recoverable and the scheduler should shutdown.
+       */
+      boolean handleException(Task<C> task, Exception exception);
+
+      static <C> TaskExceptionHandler<C> newDefaultTaskExceptionHandler()
+      {
+         return (task, exception) ->
+         {
+            throw new BarrierSchedulerException("Unhandled exception:", exception);
+         };
       }
    }
 }
