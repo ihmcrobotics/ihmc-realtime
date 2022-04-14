@@ -1,4 +1,6 @@
 # IHMC Realtime
+[ ![ihmc-realtime](https://maven-badges.herokuapp.com/maven-central/us.ihmc/ihmc-realtime/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/us.ihmc/ihmc-realtime)
+[ ![buildstatus](https://bamboo.ihmc.us/plugins/servlet/wittified/build-status/LIBS-IHMCREALTIME)](https://bamboo.ihmc.us/plugins/servlet/wittified/build-status/LIBS-IHMCREALTIME)
 
 IHMCRealtime is a simple support library that provides four feature sets:
 
@@ -41,7 +43,7 @@ repositories {
 }
 
 dependencies {
-       compile group: 'us.ihmc', name: 'ihmc-realtime', version: '1.4.0'
+       compile group: 'us.ihmc', name: 'ihmc-realtime', version: '1.5.0'
 }
 ```
 
