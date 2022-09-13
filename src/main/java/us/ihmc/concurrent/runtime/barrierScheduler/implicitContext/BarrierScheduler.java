@@ -111,6 +111,15 @@ public class BarrierScheduler<C> implements Runnable
       this.taskExceptionHandler = taskExceptionHandler;
    }
 
+   /**
+    * Resets the scheduler tick counter to zero. Use this cautiously, it is meant for restarting the
+    * controller.
+    */
+   public void reset()
+   {
+      tick = 0;
+   }
+
    @Override
    public void run()
    {
