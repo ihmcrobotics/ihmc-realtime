@@ -15,7 +15,7 @@ ihmc {
 }
 
 mainDependencies {
-   api("us.ihmc:ihmc-native-library-loader:1.3.1")
+   api("us.ihmc:ihmc-native-library-loader:2.0.1")
 }
 
 app.entrypoint("ihmc-realtime", "us.ihmc.realtime.TestBarrierSchedulerCyclic")
