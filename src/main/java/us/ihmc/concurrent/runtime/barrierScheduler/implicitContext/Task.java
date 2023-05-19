@@ -28,6 +28,8 @@ public abstract class Task<C> implements Runnable
 
    private boolean hasShutdown = false;
 
+   private int delay;
+
    private final AtomicReference<Exception> thrownException = new AtomicReference<>(null);
 
    /**
@@ -95,7 +97,7 @@ public abstract class Task<C> implements Runnable
     */
    boolean isPending(long schedulerTick)
    {
-      return schedulerTick % divisor == 0;
+      return (schedulerTick - delay) % divisor == 0;
    }
 
    /**
@@ -107,6 +109,15 @@ public abstract class Task<C> implements Runnable
    boolean isSleeping()
    {
       return barrier.isSleeping();
+   }
+
+   /**
+    * Increment the delay, expressed in number of scheduler ticks, used for scheduling the next tick
+    * execution for this task.
+    */
+   void incrementDelay()
+   {
+      delay++;
    }
 
    /**
