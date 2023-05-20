@@ -30,7 +30,8 @@ public abstract class Task<C> implements Runnable
 
    private boolean hasShutdown = false;
 
-   private long delay;
+   /** Delay expressed in number of scheduler ticks for this task. */
+   private long delay = 0;
 
    private final AtomicReference<Exception> thrownException = new AtomicReference<>(null);
 
