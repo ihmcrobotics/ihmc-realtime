@@ -2,6 +2,8 @@ package us.ihmc.concurrent.runtime.barrierScheduler.implicitContext;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import us.ihmc.concurrent.runtime.barrierScheduler.implicitContext.BarrierScheduler.TaskOverrunBehavior;
+
 public abstract class Task<C> implements Runnable
 {
    /**
@@ -27,6 +29,9 @@ public abstract class Task<C> implements Runnable
    private boolean shutdownRequested = false;
 
    private boolean hasShutdown = false;
+
+   /** Delay expressed in number of scheduler ticks for this task. */
+   private long delay = 0;
 
    private final AtomicReference<Exception> thrownException = new AtomicReference<>(null);
 
@@ -95,7 +100,7 @@ public abstract class Task<C> implements Runnable
     */
    boolean isPending(long schedulerTick)
    {
-      return schedulerTick % divisor == 0;
+      return (schedulerTick - delay) % divisor == 0;
    }
 
    /**
@@ -107,6 +112,19 @@ public abstract class Task<C> implements Runnable
    boolean isSleeping()
    {
       return barrier.isSleeping();
+   }
+
+   /**
+    * Increment the delay, expressed in number of scheduler ticks, used for scheduling the next tick
+    * execution for this task.
+    * <p>
+    * The delay is only used when the barrier scheduler is using
+    * {@link TaskOverrunBehavior#SKIP_SCHEDULER_TICK}.
+    * </p>
+    */
+   void incrementDelay()
+   {
+      delay++;
    }
 
    /**

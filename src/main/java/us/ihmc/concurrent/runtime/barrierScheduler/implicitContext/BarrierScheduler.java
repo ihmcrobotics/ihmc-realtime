@@ -62,6 +62,12 @@ public class BarrierScheduler<C> implements Runnable
        * tasks. Its next iterations are skipped until it finishes.
        */
       SKIP_TICK,
+      /**
+       * Similar to {@link #SKIP_TICK} the task will be allowed to continue while the scheduler schedules
+       * the rest of the tasks. However, this option results in attempting to resume the task every
+       * scheduler tick versus every task tick.
+       */
+      SKIP_SCHEDULER_TICK,
    }
 
    /**
@@ -140,6 +146,15 @@ public class BarrierScheduler<C> implements Runnable
             }
          }
       }
+      else if (overrunBehavior == TaskOverrunBehavior.SKIP_SCHEDULER_TICK)
+      {
+         for (int i = 0; i < tasks.size(); i++)
+         {
+            Task<C> task = tasks.get(i);
+            if (isTaskBehindSchedule(task))
+               task.incrementDelay();
+         }
+      }
 
       // Record whether a task is ready to be released. Do this once to avoid inconsistency in case
       // the task becomes ready in between the following for loops.
@@ -206,15 +221,19 @@ public class BarrierScheduler<C> implements Runnable
    {
       for (int i = 0; i < tasks.size(); i++)
       {
-         Task<C> task = tasks.get(i);
-
-         // If the task is scheduled to run this tick but isn't yet sleeping then it is behind
-         // schedule.
-         if (task.isPending(tick) && !task.isSleeping())
+         if (isTaskBehindSchedule(tasks.get(i)))
             return false;
       }
 
       return true;
+   }
+
+   /**
+    * If the task is scheduled to run this tick but isn't yet sleeping then it is behind schedule.
+    */
+   private boolean isTaskBehindSchedule(Task<C> task)
+   {
+      return task.isPending(tick) && !task.isSleeping();
    }
 
    /**
