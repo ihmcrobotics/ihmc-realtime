@@ -1,12 +1,12 @@
 plugins {
    id("us.ihmc.ihmc-build")
-   id("us.ihmc.ihmc-ci") version "7.6"
-   id("us.ihmc.ihmc-cd") version "1.23"
+   id("us.ihmc.ihmc-ci") version "7.7"
+   id("us.ihmc.ihmc-cd") version "1.24"
 }
 
 ihmc {
    group = "us.ihmc"
-   version = "1.5.1"
+   version = "1.6.0"
    vcsUrl = "https://github.com/ihmcrobotics/ihmc-realtime"
    openSource = true
 
@@ -15,7 +15,7 @@ ihmc {
 }
 
 mainDependencies {
-   api("us.ihmc:ihmc-native-library-loader:1.3.1")
+   api("us.ihmc:ihmc-native-library-loader:2.0.2")
 }
 
 app.entrypoint("ihmc-realtime", "us.ihmc.realtime.TestBarrierSchedulerCyclic")
