@@ -6,7 +6,7 @@ plugins {
 
 ihmc {
    group = "us.ihmc"
-   version = "1.5.1"
+   version = "1.6.0"
    vcsUrl = "https://github.com/ihmcrobotics/ihmc-realtime"
    openSource = true
 
