@@ -36,28 +36,19 @@ public class SingleThreadedScheduler<C> implements Runnable
       {
          Task<C> task = tasks.get(i);
          if (task.isPending(tick))
-            task.updateLocalContext(masterContext);
-      }
-
-      for (int i = 0; i < tasks.size(); i++)
-      {
-         Task<C> task = tasks.get(i);
-         if (task.isPending(tick))
          {
+            task.updateLocalContext(masterContext);
+            
             if (!tasksInitialized[i])
                tasksInitialized[i] = task.initialize();
+
             if (tasksInitialized[i])
                task.execute();
-         }
-      }
 
-      // For the single threaded scheduler update the master context right after the tasks are finished
-      // executing. This reduced delay compared to the multi threaded barrier scheduler.
-      for (int i = 0; i < tasks.size(); i++)
-      {
-         Task<C> task = tasks.get(i);
-         if (task.isPending(tick))
+            // For the single threaded scheduler update the master context right after the tasks are finished
+            // executing. This reduced delay compared to the multi threaded barrier scheduler.
             task.updateMasterContext(masterContext);
+         }
       }
 
       tick++;
