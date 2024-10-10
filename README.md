@@ -1,8 +1,11 @@
 # IHMC Realtime
 [ ![ihmc-realtime](https://maven-badges.herokuapp.com/maven-central/us.ihmc/ihmc-realtime/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/us.ihmc/ihmc-realtime)
-![buildstatus](https://github.com/ihmcrobotics/ihmc-realtime/actions/workflows/gradle-test.yml/badge.svg?branch=develop)
-![buildstatus](https://github.com/ihmcrobotics/ihmc-realtime/actions/workflows/gradle-test.yml/badge.svg?branch=main)
-![buildstatus](https://github.com/ihmcrobotics/ihmc-realtime/actions/workflows/gradle-test.yml/badge.svg?branch=0.1.6)
+
+![buildstatus](https://github.com/ihmcrobotics/ihmc-realtime/actions/workflows/gradle-test.yml/badge.svg?branch=develop) develop
+
+![buildstatus](https://github.com/ihmcrobotics/ihmc-realtime/actions/workflows/gradle-test.yml/badge.svg?branch=main) main
+
+![buildstatus](https://github.com/ihmcrobotics/ihmc-realtime/actions/workflows/gradle-test.yml/badge.svg?branch=0.1.6) Current release
 
 IHMCRealtime is a simple support library that provides four feature sets:
 
