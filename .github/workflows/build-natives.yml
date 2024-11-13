@@ -1,4 +1,4 @@
-name: Build ihmc-matrix-library natives
+name: Build ihmc-realtime natives
 
 on:
   workflow_dispatch:
