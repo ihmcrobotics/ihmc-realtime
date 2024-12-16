@@ -23,7 +23,7 @@ public class RealtimeNativeLibrary implements NativeLibraryDescription
       {
          archPackage = switch (os)
          {
-            case WIN64 -> "windows-arm64"; // Currently unsupported
+            case WIN64 -> "windows-arm64";
             case LINUX64 -> "linux-arm64";
             case MACOSX64 -> "macos-arm64";
          };
@@ -41,10 +41,10 @@ public class RealtimeNativeLibrary implements NativeLibraryDescription
          {
             return NativeLibraryWithDependencies.fromFilename("libRealtimeNative.so");
          }
-         case MACOSX64 ->
-         {
-            return NativeLibraryWithDependencies.fromFilename("libRealtimeNative.dylib");
-         }
+//         case MACOSX64 ->
+//         {
+//            return NativeLibraryWithDependencies.fromFilename("libRealtimeNative.dylib");
+//         }
       }
 
       System.out.println("Unsupported platform: " + os.name() + "-" + arch.name());
