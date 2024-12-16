@@ -49,7 +49,8 @@ public class RealtimeNativeLibrary implements NativeLibraryDescription
 
       System.out.println("Unsupported platform: " + os.name() + "-" + arch.name());
 
-      return null;   }
+      return null;
+   }
 
    private static boolean loaded = false;
 
