@@ -7,9 +7,13 @@ import us.ihmc.concurrent.runtime.barrierScheduler.implicitContext.BarrierSchedu
 public abstract class Task<C> implements Runnable
 {
    /**
+    * The next integer divisor of the scheduler frequency to set. Change this to a value greater than 0 to apply next time.
+    */
+   private long stagedDivisor = -1;
+   /**
     * The positive integer divisor of the scheduler frequency at which this task should execute.
     */
-   private final long divisor;
+   private long divisor;
 
    /**
     * The barrier used to await each execution cycle in order to synchronize the task to its divisor of
@@ -46,6 +50,16 @@ public abstract class Task<C> implements Runnable
          throw new IllegalArgumentException("divisor must be > 0");
 
       this.divisor = divisor;
+   }
+
+   /**
+    * Set a new divisor to change the frequency at which the task runs on its next execution.
+    * @param divisor the divisor of the scheduler frequency.
+    */
+   public void setDivisor(long divisor)
+   {
+      if (divisor > 0 && this.divisor != divisor)
+         this.stagedDivisor = divisor;
    }
 
    /**
@@ -92,7 +106,7 @@ public abstract class Task<C> implements Runnable
    protected abstract void updateLocalContext(C context);
 
    /**
-    * Returns whether or not this task should be nominally scheduled to execute on this tick. If it is,
+    * Returns whether this task should be nominally scheduled to execute on this tick. If it is,
     * the scheduler should do its best to execute the <b>on this tick</b>.
     *
     * @param schedulerTick the current scheduler tick
@@ -153,7 +167,7 @@ public abstract class Task<C> implements Runnable
    /**
     * Method to see if a task has shut down after its {@link #cleanup()}.
     * 
-    * @return whether or not the task has finished its cleanup and shut down.
+    * @return whether the task has finished its cleanup and shut down.
     */
    public boolean hasShutdown()
    {
@@ -194,6 +208,13 @@ public abstract class Task<C> implements Runnable
    @Override
    public final void run()
    {
+      // Update the divisor for the process to be applied on the next time it's called.
+      if (stagedDivisor > 0)
+      {
+         divisor = stagedDivisor;
+         stagedDivisor = -1;
+      }
+
       while (!shutdownRequested)
       {
          // Block until the scheduler releases this task for its next execution.
