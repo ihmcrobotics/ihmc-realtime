@@ -7,10 +7,6 @@ import us.ihmc.concurrent.runtime.barrierScheduler.implicitContext.BarrierSchedu
 public abstract class Task<C> implements Runnable
 {
    /**
-    * The next integer divisor of the scheduler frequency to set. Change this to a value greater than 0 to apply next time.
-    */
-   private long stagedDivisor = -1;
-   /**
     * The positive integer divisor of the scheduler frequency at which this task should execute.
     */
    private long divisor;
@@ -58,8 +54,13 @@ public abstract class Task<C> implements Runnable
     */
    public void setDivisor(long divisor)
    {
-      if (divisor > 0 && this.divisor != divisor)
-         this.stagedDivisor = divisor;
+      if (divisor > 0)
+         this.divisor = divisor;
+   }
+
+   public long getDivisor()
+   {
+      return divisor;
    }
 
    /**
@@ -208,13 +209,6 @@ public abstract class Task<C> implements Runnable
    @Override
    public final void run()
    {
-      // Update the divisor for the process to be applied on the next time it's called.
-      if (stagedDivisor > 0)
-      {
-         divisor = stagedDivisor;
-         stagedDivisor = -1;
-      }
-
       while (!shutdownRequested)
       {
          // Block until the scheduler releases this task for its next execution.
