@@ -38,6 +38,7 @@ public class SchedulerDemo
       {
          // No initialization needed. Return true to indicate that the task has successfully been
          // initialized and is ready to begin executing.
+         initialized = true;
          return true;
       }
 
@@ -87,7 +88,7 @@ public class SchedulerDemo
       protected boolean initialize()
       {
          // As above, no initialization needed.
-         return true;
+         return super.initialize();
       }
 
       @Override
