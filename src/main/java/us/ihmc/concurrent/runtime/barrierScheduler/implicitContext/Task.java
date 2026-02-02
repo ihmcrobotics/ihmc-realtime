@@ -9,7 +9,7 @@ public abstract class Task<C> implements Runnable
    /**
     * The positive integer divisor of the scheduler frequency at which this task should execute.
     */
-   private final long divisor;
+   private long divisor;
 
    /**
     * The barrier used to await each execution cycle in order to synchronize the task to its divisor of
@@ -46,6 +46,21 @@ public abstract class Task<C> implements Runnable
          throw new IllegalArgumentException("divisor must be > 0");
 
       this.divisor = divisor;
+   }
+
+   /**
+    * Set a new divisor to change the frequency at which the task runs on its next execution.
+    * @param divisor the divisor of the scheduler frequency.
+    */
+   public void setDivisor(long divisor)
+   {
+      if (divisor > 0)
+         this.divisor = divisor;
+   }
+
+   public long getDivisor()
+   {
+      return divisor;
    }
 
    /**
@@ -92,7 +107,7 @@ public abstract class Task<C> implements Runnable
    protected abstract void updateLocalContext(C context);
 
    /**
-    * Returns whether or not this task should be nominally scheduled to execute on this tick. If it is,
+    * Returns whether this task should be nominally scheduled to execute on this tick. If it is,
     * the scheduler should do its best to execute the <b>on this tick</b>.
     *
     * @param schedulerTick the current scheduler tick
@@ -153,7 +168,7 @@ public abstract class Task<C> implements Runnable
    /**
     * Method to see if a task has shut down after its {@link #cleanup()}.
     * 
-    * @return whether or not the task has finished its cleanup and shut down.
+    * @return whether the task has finished its cleanup and shut down.
     */
    public boolean hasShutdown()
    {
