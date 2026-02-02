@@ -21,7 +21,7 @@ public abstract class Task<C> implements Runnable
    /**
     * Whether or not the {@link #initialize()} method has been called.
     */
-   private boolean initialized;
+   protected boolean initialized;
 
    /**
     * Signals to the task to break its loop and run its {@link #cleanup()} method.
@@ -66,10 +66,14 @@ public abstract class Task<C> implements Runnable
    /**
     * Initializes the internal state of the task.
     * <p>
-    * Called once, immediately before the first {@link #execute()} call. This method is executed on the
-    * task's thread.
+    * If not called externally, it will be called immediately before the first {@link #execute()} call.
+    * This method is executed on the task's thread.
     */
-   protected abstract boolean initialize();
+   protected boolean initialize()
+   {
+      initialized = true;
+      return true;
+   }
 
    /**
     * Executes a single iteration of this task.

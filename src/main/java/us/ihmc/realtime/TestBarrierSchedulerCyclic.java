@@ -125,7 +125,7 @@ public class TestBarrierSchedulerCyclic
       @Override
       protected boolean initialize()
       {
-         return true;
+         return super.initialize();
       }
 
       /**
@@ -213,7 +213,7 @@ public class TestBarrierSchedulerCyclic
       @Override
       protected boolean initialize()
       {
-         return true;
+         return super.initialize();
       }
 
       /**
