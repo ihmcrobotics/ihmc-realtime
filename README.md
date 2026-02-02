@@ -1,5 +1,4 @@
 # IHMC Realtime
-[ ![ihmc-realtime](https://maven-badges.herokuapp.com/maven-central/us.ihmc/ihmc-realtime/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/us.ihmc/ihmc-realtime)
 
 ![buildstatus](https://github.com/ihmcrobotics/ihmc-realtime/actions/workflows/gradle-test.yml/badge.svg?branch=develop) develop
 
